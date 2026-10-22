@@ -2,13 +2,14 @@ import type { Dict } from './tr'
 
 export const en: Dict = {
   langName: 'English',
-  nav: { study: 'Create study', dashboard: 'Dashboard', personas: 'Personas', runs: 'Simulations', faq: 'FAQ', admin: 'Admin', credits: 'Credits' },
+  nav: { guide: 'Guide', study: 'Create study', dashboard: 'Dashboard', personas: 'Personas', runs: 'Simulations', faq: 'FAQ', admin: 'Admin', credits: 'Credits' },
   brand: { simulation: 'Simulation', beta: 'Beta · Early Access' },
   sidebar: { menu: 'Open menu', theme: 'Toggle theme', dark: '☾ Dark', light: '☀ Light', version: 'v0.3.0 · Beta', language: 'Language' },
   dashboard: {
     title: 'Dashboard',
     text: 'Welcome to Teknodoz Simulation. Test your products and services with simulated user personas.',
     ctaRun: 'Start a simulation',
+    ctaGuide: 'Open the guide',
     ctaPersonas: 'Explore personas',
     stats: {
       tasks: 'Tasks',
@@ -215,6 +216,9 @@ export const en: Dict = {
       { q: 'Why do tasks run in English?', a: 'The MatrAIx task content (survey questions, scenarios) is in English. The interface, task titles and descriptions are translated to your chosen language.' },
       { q: 'How do I get access or support?', a: 'Reach us through the email, WhatsApp and LinkedIn links on the Credits page.' },
       { q: 'Which test methods are supported?', a: 'Concept, pricing (Van Westendorp), multivariate (MVT, choice-based), usability walkthrough, funnel drop-off and report-comprehension tests run with persona simulation. Load/stress testing and chaos engineering are system tests, not what persona simulation is for; use tools such as k6 or Locust. A multi-armed bandit is a traffic-allocation algorithm: it can be fed by persona results but is not added yet.' },
+      { q: 'Where do the personas come from and which countries are available?', a: 'There are two pools: 200 real persona records from the MatrAIx sample dataset and 1,200 synthetic personas generated for 50 countries. Country-based personas are sampled from country statistics; life stage, economic motivation and risk tolerance are heuristic mappings. You can refresh the data from the World Bank on the Admin page.' },
+      { q: 'How do I study a website, a mobile app or a survey?', a: 'On the Create study page pick a source: a survey (your own 5–10 questions), a website URL (the page text is fetched), an App Store link (read through the official API) or a product description. For Google Play paste the description by hand. APK files and live browser walk-throughs are not supported yet.' },
+      { q: 'How reliable are the results?', a: 'Personas are synthetic and do not replace real users. Use the results to generate ideas and hypotheses, and validate important decisions with real users. Website and store inputs are evaluated on text only.' },
     ],
   },
   study: {
@@ -301,6 +305,94 @@ export const en: Dict = {
     created: 'Study started. You can follow progress below.',
     loginNeeded: 'You need to sign in as admin to create a study.',
     experimental: 'Note (beta): the results summary has not yet been verified live against real MatrAIx output. Quick test mode only checks the flow and does not produce meaningful results.',
+  },
+  guide: {
+    'title': 'Guide',
+    'intro': 'Step by step: pick personas, create a study, run it and read the results. Screenshots come from the real interface.',
+    'tocTitle': 'Steps',
+    'shotAlt': 'Screenshot',
+    'steps': [
+      {
+        't': 'Sign in',
+        'd': 'Open the Admin page in the sidebar and sign in with your email and password. Anyone can browse personas and this guide; creating studies and starting simulations needs an admin sign-in.',
+        'tip': 'To change the password, generate a new hash on the server with scripts/hash-password.mjs and update .env.',
+      },
+      {
+        't': 'Look at the dashboard',
+        'd': 'The dashboard shows the number of tasks, personas and languages. Signed in as admin you also see run counts, success rate, your level and system readiness.',
+        'tip': 'If readiness says something is missing, check the status card on the Admin page.',
+      },
+      {
+        't': 'Explore personas',
+        'd': 'There are two pools: country-based synthetic personas (50 countries) and the MatrAIx sample dataset. Use the country picker to choose one or more countries, then narrow by region, subregion, age, life stage, economic motivation and risk tolerance.',
+        'tip': '"Internet users only" is on by default, which suits digital product tests.',
+      },
+      {
+        't': 'Select in bulk',
+        'd': 'The bulk selection box picks everything matching your filters, a random N, or N per country. At most 100 personas can be selected. "Use in simulation" in the bottom bar carries the selection over.',
+        'tip': 'To compare countries, "Pick per country" gives the most balanced sample.',
+      },
+      {
+        't': 'Persona details',
+        'd': 'Click a card to open its profile: age, gender, region, life stage, income level, economic motivation, risk tolerance, native language and currency. Synthetic personas carry a "Synthetic" badge.',
+        'tip': 'Country-based personas do not represent real people.',
+      },
+      {
+        't': 'Create a study: source',
+        'd': 'Choose what to test: a survey, a website URL, a mobile app store link or a product/service description. For websites and the App Store, "Fetch content" reads the page text on the server.',
+        'tip': 'For Google Play paste the description by hand; APK files are not supported.',
+      },
+      {
+        't': 'Prepare the questions',
+        'd': 'Pick a template (website, store, product) or write your own 5–10 questions. Use "Import" to add JSON, CSV or one question per line. Give each question a type, options and an optional reason prompt.',
+        'tip': 'Line format: "Question | A | B | C" is single choice, "Question [text]" is free text.',
+      },
+      {
+        't': 'Run and read the results',
+        'd': 'Choose the audience (selected personas or a random sample) and the mode. Quick test verifies the flow and needs no API key; a real run needs a model API key. When it finishes, "Results" shows per-question distributions and "Output" shows the log.',
+        'tip': 'Start with few personas and quick test; real runs cost money.',
+      },
+      {
+        't': 'System settings',
+        'd': 'On the Admin page you manage the MatrAIx setup, system status and country data. "Refresh from World Bank" updates country statistics; API keys go into the server .env file.',
+        'tip': 'The server needs outbound internet access.',
+      },
+    ],
+    'examplesTitle': 'Example studies',
+    'examplesIntro': 'Each example fills the study builder with a ready description and questions. Edit it and adapt it to your own product. The products in the examples are fictional.',
+    'load': 'Load example',
+    'loaded': 'Example loaded. You can edit it on the Create study page.',
+    'loadedCountry': '{n} personas per country were selected too.',
+    'learnTitle': 'What to look at in this example',
+    'limitsTitle': 'Limits and honest notes',
+    'limits': ['Personas are synthetic and do not replace real users; they are for exploration and hypothesis generation.', 'In the country-based pool, age, urbanisation, income and unemployment come from country statistics; life stage, economic motivation and risk tolerance are heuristic.', 'The baseline country data is approximate. Refresh it from the World Bank on the Admin page.', 'Website and store inputs read text only. Visual design, video, JavaScript-rendered content and the app itself are not evaluated. APK files and live browser walk-throughs are not available yet.', 'Task content is in English; personas read and answer in English.', 'Real runs incur model API costs.'],
+    'ex': {
+      'coffee': {
+        'title': 'Coffee subscription concept test',
+        'summary': 'Evaluate a fictional subscription product with personas from Türkiye and Germany. The example selects 5 personas per country (bulk selection).',
+        'learn': ['How do interest and purchase intent differ between countries?', 'Price perception (cheap, fair, expensive) and what holds buyers back', 'What they use today'],
+      },
+      'landing': {
+        'title': 'Landing page review',
+        'summary': 'Let personas read the text of a web page: clarity, trust and next step. For your own page enter a URL and press "Fetch content".',
+        'learn': ['Is the offer clear on first read?', 'Trust and missing information: price, proof, how it works', 'A one-sentence summary of hesitations'],
+      },
+      'store': {
+        'title': 'App store listing',
+        'summary': 'How a store listing (name, price, rating, description) affects the download decision. Paste an App Store link to pull your own app.',
+        'learn': ['Download intent and price fairness', 'Which listing element decides?', 'Revenue-model preference and concerns'],
+      },
+      'pricing': {
+        'title': 'Subscription price perception',
+        'summary': 'Explore the acceptable price range with four price questions (too cheap, bargain, expensive, too expensive); plan choice and switching intent are asked too.',
+        'learn': ['Acceptable price range', 'Distribution of plan choice', 'Switching intent for a discount'],
+      },
+      'support': {
+        'title': 'Customer support experience (5 questions)',
+        'summary': 'A short NPS-style survey: recommendation, satisfaction, what mattered most, what should have been different and the first fix.',
+        'learn': ['Distribution of recommendation and satisfaction', 'Which factor matters most?', 'The one thing to fix first'],
+      },
+    },
   },
   credits: {
     title: 'Credits',

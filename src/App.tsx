@@ -3,6 +3,7 @@ import Sidebar from './components/Sidebar'
 import Admin from './pages/Admin'
 import Credits from './pages/Credits'
 import Faq from './pages/Faq'
+import Guide from './pages/Guide'
 import Dashboard from './pages/Dashboard'
 import Personas from './pages/Personas'
 import Simulations from './pages/Simulations'
@@ -20,6 +21,7 @@ export default function App() {
         {page === 'personas' && <Personas go={setPage} />}
         {page === 'runs' && <Simulations go={setPage} />}
         {page === 'study' && <Study go={setPage} />}
+        {page === 'guide' && <Guide go={setPage} />}
         {page === 'faq' && <Faq />}
         {page === 'admin' && <Admin />}
         {page === 'credits' && <Credits />}

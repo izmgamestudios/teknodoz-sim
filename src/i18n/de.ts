@@ -2,13 +2,14 @@ import type { Dict } from './tr'
 
 export const de: Dict = {
   langName: 'Deutsch',
-  nav: { study: 'Studie erstellen', dashboard: 'Übersicht', personas: 'Personas', runs: 'Simulationen', faq: 'FAQ', admin: 'Admin', credits: 'Credits' },
+  nav: { guide: 'Anleitung', study: 'Studie erstellen', dashboard: 'Übersicht', personas: 'Personas', runs: 'Simulationen', faq: 'FAQ', admin: 'Admin', credits: 'Credits' },
   brand: { simulation: 'Simulation', beta: 'Beta · Früher Zugang' },
   sidebar: { menu: 'Menü öffnen', theme: 'Design wechseln', dark: '☾ Dunkel', light: '☀ Hell', version: 'v0.3.0 · Beta', language: 'Sprache' },
   dashboard: {
     title: 'Übersicht',
     text: 'Willkommen bei Teknodoz Simulation. Teste deine Produkte und Dienste mit simulierten Nutzer-Personas.',
     ctaRun: 'Simulation starten',
+    ctaGuide: 'Anleitung öffnen',
     ctaPersonas: 'Personas entdecken',
     stats: {
       tasks: 'Aufgaben',
@@ -215,6 +216,9 @@ export const de: Dict = {
       { q: 'Warum laufen die Aufgaben auf Englisch?', a: 'Die MatrAIx-Inhalte (Umfragefragen, Szenarien) sind englisch. Oberfläche, Aufgabentitel und Beschreibungen werden in deine Sprache übersetzt.' },
       { q: 'Wie erhalte ich Zugang oder Support?', a: 'Über die E-Mail-, WhatsApp- und LinkedIn-Links auf der Credits-Seite.' },
       { q: 'Welche Testmethoden werden unterstützt?', a: 'Konzept-, Preis- (Van Westendorp), multivariate (MVT, auswahlbasiert), Usability-Walkthrough-, Funnel-Abbruch- und Berichtsverständlichkeits-Tests laufen mit Persona-Simulation. Last-/Stresstests und Chaos Engineering sind Systemtests und nicht der Zweck der Persona-Simulation; dafür eignen sich Tools wie k6 oder Locust. Ein Multi-Armed-Bandit ist ein Algorithmus zur Traffic-Verteilung: Er kann mit Persona-Ergebnissen gespeist werden, ist aber noch nicht enthalten.' },
+      { q: 'Woher stammen die Personas und welche Länder gibt es?', a: 'Es gibt zwei Pools: 200 echte Persona-Datensätze aus dem MatrAIx-Beispieldatensatz und 1.200 synthetische Personas für 50 Länder. Länderbasierte Personas werden aus Länderstatistiken gezogen; Lebensphase, wirtschaftliche Motivation und Risikobereitschaft sind heuristische Zuordnungen. Im Admin-Bereich kannst du die Daten von der Weltbank aktualisieren.' },
+      { q: 'Wie untersuche ich eine Website, eine mobile App oder eine Umfrage?', a: 'Wähle auf der Seite „Studie erstellen“ eine Quelle: Umfrage (deine eigenen 5–10 Fragen), Website-URL (der Seitentext wird geladen), App-Store-Link (über die offizielle API gelesen) oder Produktbeschreibung. Bei Google Play füge die Beschreibung von Hand ein. APK-Dateien und Live-Browser-Durchgänge werden noch nicht unterstützt.' },
+      { q: 'Wie verlässlich sind die Ergebnisse?', a: 'Personas sind synthetisch und ersetzen keine echten Nutzer. Nutze die Ergebnisse für Ideen und Hypothesen und sichere wichtige Entscheidungen mit echten Nutzern ab. Website- und Store-Eingaben werden nur anhand des Textes bewertet.' },
     ],
   },
   study: {
@@ -301,6 +305,94 @@ export const de: Dict = {
     created: 'Studie gestartet. Den Fortschritt siehst du unten.',
     loginNeeded: 'Zum Erstellen einer Studie musst du dich als Admin anmelden.',
     experimental: 'Hinweis (Beta): Die Ergebniszusammenfassung wurde noch nicht live mit echter MatrAIx-Ausgabe geprüft. Der Schnelltest prüft nur den Ablauf und liefert keine aussagekräftigen Ergebnisse.',
+  },
+  guide: {
+    'title': 'Anleitung',
+    'intro': 'Schritt für Schritt: Personas wählen, eine Studie erstellen, ausführen und Ergebnisse lesen. Die Screenshots stammen aus der echten Oberfläche.',
+    'tocTitle': 'Schritte',
+    'shotAlt': 'Screenshot',
+    'steps': [
+      {
+        't': 'Anmelden',
+        'd': 'Öffne in der Seitenleiste den Admin-Bereich und melde dich mit E-Mail und Passwort an. Personas und diese Anleitung kann jeder ansehen; zum Erstellen von Studien und Starten von Simulationen ist die Admin-Anmeldung nötig.',
+        'tip': 'Zum Ändern des Passworts erzeuge auf dem Server mit scripts/hash-password.mjs einen neuen Hash und aktualisiere .env.',
+      },
+      {
+        't': 'Übersicht ansehen',
+        'd': 'Die Übersicht zeigt Aufgaben, Personas und Sprachen. Als Admin siehst du auch Laufzahlen, Erfolgsquote, dein Level und die Systembereitschaft.',
+        'tip': 'Meldet die Bereitschaft etwas Fehlendes, prüfe die Statuskarte im Admin-Bereich.',
+      },
+      {
+        't': 'Personas erkunden',
+        'd': 'Es gibt zwei Pools: länderbasierte synthetische Personas (50 Länder) und den MatrAIx-Beispieldatensatz. Wähle mit der Länderauswahl ein oder mehrere Länder und grenze nach Region, Unterregion, Alter, Lebensphase, wirtschaftlicher Motivation und Risikobereitschaft ein.',
+        'tip': '„Nur Internetnutzer“ ist standardmäßig aktiv, passend für Tests digitaler Produkte.',
+      },
+      {
+        't': 'Mehrfachauswahl',
+        'd': 'Im Feld „Mehrfachauswahl“ wählst du alle Treffer der Filter, N zufällige oder N pro Land. Höchstens 100 Personas sind wählbar. „In Simulation nutzen“ in der unteren Leiste übernimmt die Auswahl.',
+        'tip': 'Für Ländervergleiche liefert „Pro Land wählen“ die ausgewogenste Stichprobe.',
+      },
+      {
+        't': 'Persona-Details',
+        'd': 'Klicke auf eine Karte, um das Profil zu öffnen: Alter, Geschlecht, Region, Lebensphase, Einkommensniveau, wirtschaftliche Motivation, Risikobereitschaft, Muttersprache und Währung. Synthetische Personas tragen das Label „Synthetisch“.',
+        'tip': 'Länderbasierte Personas stehen nicht für reale Personen.',
+      },
+      {
+        't': 'Studie erstellen: Quelle',
+        'd': 'Wähle, was getestet wird: eine Umfrage, eine Website-URL, ein Store-Link einer mobilen App oder eine Produkt-/Dienstbeschreibung. Bei Websites und im App Store liest „Inhalt laden“ den Seitentext auf dem Server.',
+        'tip': 'Bei Google Play füge die Beschreibung von Hand ein; APK-Dateien werden nicht unterstützt.',
+      },
+      {
+        't': 'Fragen vorbereiten',
+        'd': 'Wähle eine Vorlage (Website, Store, Produkt) oder schreibe 5–10 eigene Fragen. Mit „Importieren“ fügst du JSON, CSV oder eine Frage pro Zeile hinzu. Gib jeder Frage Typ, Optionen und optional eine Begründungsabfrage.',
+        'tip': 'Zeilenformat: „Frage | A | B | C“ ist Einfachauswahl, „Frage [text]“ ist Freitext.',
+      },
+      {
+        't': 'Ausführen und Ergebnisse lesen',
+        'd': 'Wähle Zielgruppe (gewählte Personas oder Zufallsstichprobe) und Modus. Der Schnelltest prüft den Ablauf und braucht keinen API-Key; ein echter Lauf braucht einen Modell-API-Key. Nach dem Ende zeigt „Ergebnisse“ die Verteilungen je Frage und „Ausgabe“ das Protokoll.',
+        'tip': 'Beginne mit wenigen Personas und Schnelltest; echte Läufe kosten Geld.',
+      },
+      {
+        't': 'Systemeinstellungen',
+        'd': 'Im Admin-Bereich verwaltest du die MatrAIx-Einrichtung, den Systemstatus und die Länderdaten. „Von der Weltbank aktualisieren“ erneuert die Länderstatistiken; API-Keys gehören in die .env-Datei des Servers.',
+        'tip': 'Der Server braucht Internetzugang nach außen.',
+      },
+    ],
+    'examplesTitle': 'Beispielstudien',
+    'examplesIntro': 'Jedes Beispiel füllt den Studien-Editor mit fertiger Beschreibung und Fragen. Bearbeite es und passe es an dein Produkt an. Die Produkte in den Beispielen sind fiktiv.',
+    'load': 'Beispiel laden',
+    'loaded': 'Beispiel geladen. Du kannst es auf der Seite „Studie erstellen“ bearbeiten.',
+    'loadedCountry': 'Es wurden auch {n} Personas pro Land gewählt.',
+    'learnTitle': 'Worauf man in diesem Beispiel achtet',
+    'limitsTitle': 'Grenzen und ehrliche Hinweise',
+    'limits': ['Personas sind synthetisch und ersetzen keine echten Nutzer; sie dienen der Exploration und Hypothesenbildung.', 'Im länderbasierten Pool stammen Alter, Verstädterung, Einkommen und Arbeitslosigkeit aus Länderstatistiken; Lebensphase, wirtschaftliche Motivation und Risikobereitschaft sind heuristisch.', 'Die Länder-Ausgangsdaten sind näherungsweise. Aktualisiere sie im Admin-Bereich über die Weltbank.', 'Website- und Store-Eingaben lesen nur Text. Visuelles Design, Video, per JavaScript erzeugte Inhalte und die App selbst werden nicht bewertet. APK-Dateien und Live-Browser-Durchgänge gibt es noch nicht.', 'Die Aufgabeninhalte sind englisch; Personas lesen und antworten auf Englisch.', 'Echte Läufe verursachen Modell-API-Kosten.'],
+    'ex': {
+      'coffee': {
+        'title': 'Konzepttest Kaffee-Abo',
+        'summary': 'Bewerte ein fiktives Abo-Produkt mit Personas aus der Türkei und Deutschland. Das Beispiel wählt 5 Personas pro Land (Mehrfachauswahl).',
+        'learn': ['Wie unterscheiden sich Interesse und Kaufabsicht zwischen den Ländern?', 'Preiswahrnehmung (günstig, fair, teuer) und Kaufhürden', 'Was sie heute nutzen'],
+      },
+      'landing': {
+        'title': 'Landingpage-Bewertung',
+        'summary': 'Personas lesen den Text einer Webseite: Verständlichkeit, Vertrauen und nächster Schritt. Für deine eigene Seite gib eine URL ein und klicke „Inhalt laden“.',
+        'learn': ['Ist das Angebot beim ersten Lesen klar?', 'Vertrauen und fehlende Infos: Preis, Belege, Funktionsweise', 'Zusammenfassung der Bedenken in einem Satz'],
+      },
+      'store': {
+        'title': 'App-Store-Eintrag',
+        'summary': 'Wie ein Store-Eintrag (Name, Preis, Bewertung, Beschreibung) die Download-Entscheidung beeinflusst. Füge einen App-Store-Link ein, um deine eigene App zu laden.',
+        'learn': ['Download-Absicht und Preisfairness', 'Welches Element des Eintrags entscheidet?', 'Präferenz des Erlösmodells und Bedenken'],
+      },
+      'pricing': {
+        'title': 'Preiswahrnehmung bei Abos',
+        'summary': 'Erkunde die akzeptable Preisspanne mit vier Preisfragen (zu billig, Schnäppchen, teuer, zu teuer); gefragt werden auch Planwahl und Wechselbereitschaft.',
+        'learn': ['Akzeptable Preisspanne', 'Verteilung der Planwahl', 'Wechselbereitschaft bei Rabatt'],
+      },
+      'support': {
+        'title': 'Kundenservice-Erlebnis (5 Fragen)',
+        'summary': 'Eine kurze Umfrage im NPS-Stil: Empfehlung, Zufriedenheit, was am wichtigsten war, was anders sein sollte und die erste Verbesserung.',
+        'learn': ['Verteilung von Empfehlung und Zufriedenheit', 'Welcher Faktor zählt am meisten?', 'Das Erste, was behoben werden sollte'],
+      },
+    },
   },
   credits: {
     title: 'Credits',

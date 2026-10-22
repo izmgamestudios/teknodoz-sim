@@ -2,13 +2,14 @@ import type { Dict } from './tr'
 
 export const es: Dict = {
   langName: 'Español',
-  nav: { study: 'Crear estudio', dashboard: 'Panel', personas: 'Personas', runs: 'Simulaciones', faq: 'FAQ', admin: 'Admin', credits: 'Créditos' },
+  nav: { guide: 'Guía', study: 'Crear estudio', dashboard: 'Panel', personas: 'Personas', runs: 'Simulaciones', faq: 'FAQ', admin: 'Admin', credits: 'Créditos' },
   brand: { simulation: 'Simulation', beta: 'Beta · Acceso anticipado' },
   sidebar: { menu: 'Abrir menú', theme: 'Cambiar tema', dark: '☾ Oscuro', light: '☀ Claro', version: 'v0.3.0 · Beta', language: 'Idioma' },
   dashboard: {
     title: 'Panel',
     text: 'Bienvenido a Teknodoz Simulation. Prueba tus productos y servicios con personas de usuario simuladas.',
     ctaRun: 'Iniciar simulación',
+    ctaGuide: 'Abrir la guía',
     ctaPersonas: 'Explorar personas',
     stats: {
       tasks: 'Tareas',
@@ -215,6 +216,9 @@ export const es: Dict = {
       { q: '¿Por qué las tareas se ejecutan en inglés?', a: 'El contenido de las tareas de MatrAIx (preguntas, escenarios) está en inglés. La interfaz, los títulos y las descripciones se traducen a tu idioma.' },
       { q: '¿Cómo obtengo acceso o soporte?', a: 'Mediante los enlaces de correo, WhatsApp y LinkedIn de la página de Créditos.' },
       { q: '¿Qué métodos de prueba se admiten?', a: 'Las pruebas de concepto, de precios (Van Westendorp), multivariantes (MVT, basadas en elección), de recorrido de usabilidad, de abandono del embudo y de comprensión de informes funcionan con simulación de personas. Las pruebas de carga/estrés y la ingeniería del caos son pruebas de sistema, no el objetivo de la simulación de personas; usa herramientas como k6 o Locust. Un bandido multibrazo es un algoritmo de reparto de tráfico: puede alimentarse con resultados de personas, pero aún no está incluido.' },
+      { q: '¿De dónde vienen las personas y qué países hay?', a: 'Hay dos grupos: 200 registros reales de personas del dataset de ejemplo de MatrAIx y 1200 personas sintéticas generadas para 50 países. Las personas por país se muestrean de estadísticas del país; etapa de vida, motivación económica y tolerancia al riesgo son asignaciones heurísticas. Puedes actualizar los datos desde el Banco Mundial en la página Admin.' },
+      { q: '¿Cómo estudio un sitio web, una app móvil o una encuesta?', a: 'En la página Crear estudio elige una fuente: encuesta (tus propias 5–10 preguntas), URL de sitio web (se obtiene el texto de la página), enlace de App Store (leído con la API oficial) o descripción de producto. Para Google Play pega la descripción a mano. Los archivos APK y los recorridos en navegador en vivo aún no se admiten.' },
+      { q: '¿Qué fiabilidad tienen los resultados?', a: 'Las personas son sintéticas y no sustituyen a usuarios reales. Usa los resultados para generar ideas e hipótesis y valida las decisiones importantes con usuarios reales. Las entradas de sitio web y tienda se evalúan solo por su texto.' },
     ],
   },
   study: {
@@ -301,6 +305,94 @@ export const es: Dict = {
     created: 'Estudio iniciado. Puedes seguir el progreso abajo.',
     loginNeeded: 'Debes iniciar sesión como admin para crear un estudio.',
     experimental: 'Nota (beta): el resumen de resultados aún no se ha verificado en vivo con salida real de MatrAIx. La prueba rápida solo comprueba el flujo y no produce resultados significativos.',
+  },
+  guide: {
+    'title': 'Guía',
+    'intro': 'Paso a paso: elige personas, crea un estudio, ejecútalo y lee los resultados. Las capturas provienen de la interfaz real.',
+    'tocTitle': 'Pasos',
+    'shotAlt': 'Captura de pantalla',
+    'steps': [
+      {
+        't': 'Inicia sesión',
+        'd': 'Abre la página Admin en la barra lateral e inicia sesión con tu correo y contraseña. Cualquiera puede ver las personas y esta guía; crear estudios e iniciar simulaciones requiere iniciar sesión como admin.',
+        'tip': 'Para cambiar la contraseña, genera un nuevo hash en el servidor con scripts/hash-password.mjs y actualiza .env.',
+      },
+      {
+        't': 'Mira el panel',
+        'd': 'El panel muestra el número de tareas, personas e idiomas. Con sesión de admin ves también ejecuciones, tasa de éxito, tu nivel y el estado del sistema.',
+        'tip': 'Si el estado indica que falta algo, revisa la tarjeta de estado en la página Admin.',
+      },
+      {
+        't': 'Explora las personas',
+        'd': 'Hay dos grupos: personas sintéticas por país (50 países) y el dataset de ejemplo de MatrAIx. Con el selector de países elige uno o varios y acota por región, subregión, edad, etapa de vida, motivación económica y tolerancia al riesgo.',
+        'tip': '"Solo usuarios de internet" está activado por defecto, adecuado para pruebas de productos digitales.',
+      },
+      {
+        't': 'Selecciona en bloque',
+        'd': 'El cuadro de selección masiva elige todo lo que cumple los filtros, N al azar o N por país. Se pueden elegir como máximo 100 personas. "Usar en simulación" en la barra inferior lleva la selección.',
+        'tip': 'Para comparar países, "Elegir por país" da la muestra más equilibrada.',
+      },
+      {
+        't': 'Detalle de la persona',
+        'd': 'Haz clic en una tarjeta para abrir su perfil: edad, género, región, etapa de vida, nivel de ingresos, motivación económica, tolerancia al riesgo, lengua materna y moneda. Las personas sintéticas llevan la etiqueta "Sintética".',
+        'tip': 'Las personas por país no representan a personas reales.',
+      },
+      {
+        't': 'Crear un estudio: fuente',
+        'd': 'Elige qué probar: una encuesta, una URL de sitio web, un enlace de tienda de una app móvil o una descripción de producto/servicio. En sitios web y App Store, "Obtener contenido" lee el texto de la página en el servidor.',
+        'tip': 'Para Google Play pega la descripción a mano; los APK no se admiten.',
+      },
+      {
+        't': 'Prepara las preguntas',
+        'd': 'Elige una plantilla (sitio web, tienda, producto) o escribe tus propias 5–10 preguntas. Con "Importar" añades JSON, CSV o una pregunta por línea. Da a cada pregunta tipo, opciones y, si quieres, una petición de motivo.',
+        'tip': 'Formato de línea: "Pregunta | A | B | C" es opción única, "Pregunta [text]" es texto libre.',
+      },
+      {
+        't': 'Ejecuta y lee los resultados',
+        'd': 'Elige el público (personas seleccionadas o una muestra aleatoria) y el modo. La prueba rápida verifica el flujo y no necesita API key; una ejecución real necesita una API key de modelo. Al terminar, "Resultados" muestra las distribuciones por pregunta y "Salida" el registro.',
+        'tip': 'Empieza con pocas personas y prueba rápida; las ejecuciones reales cuestan dinero.',
+      },
+      {
+        't': 'Ajustes del sistema',
+        'd': 'En la página Admin gestionas la instalación de MatrAIx, el estado del sistema y los datos por país. "Actualizar desde el Banco Mundial" renueva las estadísticas; las API keys van en el archivo .env del servidor.',
+        'tip': 'El servidor necesita acceso a internet.',
+      },
+    ],
+    'examplesTitle': 'Estudios de ejemplo',
+    'examplesIntro': 'Cada ejemplo rellena el creador de estudios con una descripción y preguntas listas. Edítalo y adáptalo a tu producto. Los productos de los ejemplos son ficticios.',
+    'load': 'Cargar ejemplo',
+    'loaded': 'Ejemplo cargado. Puedes editarlo en la página Crear estudio.',
+    'loadedCountry': 'También se seleccionaron {n} personas por país.',
+    'learnTitle': 'Qué mirar en este ejemplo',
+    'limitsTitle': 'Límites y notas honestas',
+    'limits': ['Las personas son sintéticas y no sustituyen a usuarios reales; sirven para explorar y generar hipótesis.', 'En el grupo por país, edad, urbanización, ingresos y desempleo provienen de estadísticas del país; etapa de vida, motivación económica y tolerancia al riesgo son heurísticas.', 'Los datos base por país son aproximados. Actualízalos desde el Banco Mundial en la página Admin.', 'Las entradas de sitio web y tienda solo leen texto. No se evalúan el diseño visual, el vídeo, el contenido generado con JavaScript ni la app en sí. Aún no hay APK ni recorridos en navegador en vivo.', 'El contenido de las tareas está en inglés; las personas leen y responden en inglés.', 'Las ejecuciones reales generan costes de API del modelo.'],
+    'ex': {
+      'coffee': {
+        'title': 'Prueba de concepto: suscripción de café',
+        'summary': 'Evalúa un producto de suscripción ficticio con personas de Turquía y Alemania. El ejemplo selecciona 5 personas por país (selección masiva).',
+        'learn': ['¿Cómo difieren el interés y la intención de compra entre países?', 'Percepción del precio (barato, justo, caro) y qué frena la compra', 'Qué usan hoy'],
+      },
+      'landing': {
+        'title': 'Revisión de landing page',
+        'summary': 'Las personas leen el texto de una página web: claridad, confianza y siguiente paso. Para tu propia página escribe una URL y pulsa "Obtener contenido".',
+        'learn': ['¿Se entiende la oferta en la primera lectura?', 'Confianza e información que falta: precio, pruebas, cómo funciona', 'Un resumen en una frase de las dudas'],
+      },
+      'store': {
+        'title': 'Ficha de tienda de apps',
+        'summary': 'Cómo una ficha de tienda (nombre, precio, valoración, descripción) influye en la decisión de descarga. Pega un enlace de App Store para traer tu propia app.',
+        'learn': ['Intención de descarga y justicia del precio', '¿Qué elemento de la ficha decide?', 'Preferencia de modelo de ingresos y preocupaciones'],
+      },
+      'pricing': {
+        'title': 'Percepción del precio de una suscripción',
+        'summary': 'Explora el rango de precios aceptable con cuatro preguntas de precio (demasiado barato, ganga, caro, demasiado caro); también se pregunta la elección de plan y la intención de cambiar.',
+        'learn': ['Rango de precios aceptable', 'Distribución de la elección de plan', 'Intención de cambiar por un descuento'],
+      },
+      'support': {
+        'title': 'Experiencia de atención al cliente (5 preguntas)',
+        'summary': 'Una encuesta corta estilo NPS: recomendación, satisfacción, qué importó más, qué debió ser distinto y la primera mejora.',
+        'learn': ['Distribución de recomendación y satisfacción', '¿Qué factor importa más?', 'Lo primero que hay que arreglar'],
+      },
+    },
   },
   credits: {
     title: 'Créditos',

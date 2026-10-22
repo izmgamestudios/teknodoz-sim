@@ -4,13 +4,14 @@ export type TaskText = { title: string; desc: string }
 
 export const tr = {
   langName: 'Türkçe',
-  nav: { study: 'Çalışma oluştur', dashboard: 'Panel', personas: 'Personalar', runs: 'Simülasyonlar', faq: 'SSS', admin: 'Admin', credits: 'Credits' },
+  nav: { guide: 'Kılavuz', study: 'Çalışma oluştur', dashboard: 'Panel', personas: 'Personalar', runs: 'Simülasyonlar', faq: 'SSS', admin: 'Admin', credits: 'Credits' },
   brand: { simulation: 'Simulation', beta: 'Beta · Erken Erişim' },
   sidebar: { menu: 'Menüyü aç', theme: 'Tema değiştir', dark: '☾ Dark', light: '☀ Light', version: 'v0.3.0 · Beta', language: 'Dil' },
   dashboard: {
     title: 'Panel',
     text: 'Teknodoz Simulation\'a hoş geldin. Ürünlerini ve hizmetlerini sanal kullanıcı personalarıyla test et.',
     ctaRun: 'Simülasyon başlat',
+    ctaGuide: 'Kılavuzu aç',
     ctaPersonas: 'Personaları keşfet',
     stats: {
       tasks: 'Görev',
@@ -219,6 +220,9 @@ export const tr = {
       { q: 'Görevler neden İngilizce çalışıyor?', a: 'MatrAIx görev içerikleri (anket soruları, senaryolar) İngilizcedir. Arayüz, görev başlıkları ve açıklamaları ise seçtiğin dile çevrilir.' },
       { q: 'Erişim ve destek için kime ulaşırım?', a: 'Credits sayfasındaki e-posta, WhatsApp ve LinkedIn bağlantılarından ulaşabilirsin.' },
       { q: 'Hangi test yöntemleri destekleniyor?', a: 'Konsept, fiyat (Van Westendorp), çok değişkenli (MVT, seçim tabanlı), kullanılabilirlik yürüyüşü, huni terk ve rapor anlaşılırlığı testleri persona simülasyonuyla çalışır. Yük/stres testi ve kaos mühendisliği sistem testleridir, persona simülasyonunun konusu değildir; k6 veya Locust gibi araçlar gerekir. Çok kollu haydut ise bir trafik dağıtım algoritmasıdır; persona sonuçlarından beslenebilir ama henüz eklenmedi.' },
+      { q: 'Personalar nereden geliyor, hangi ülkeler var?', a: 'İki havuz var: MatrAIx örnek veri setinden 200 gerçek persona kaydı ve 50 ülke için üretilen 1200 sentetik persona. Ülke bazlı personalar ülke istatistiklerinden örneklenir; yaşam evresi, ekonomik motivasyon ve risk toleransı sezgisel eşlemelerdir. Admin sayfasından World Bank verisiyle yenileyebilirsin.' },
+      { q: 'Web sitesi, mobil uygulama veya anketle nasıl çalışma yaparım?', a: 'Çalışma oluştur sayfasında bir kaynak seç: anket (kendi 5–10 sorun), web sitesi URL (sayfa metni çekilir), App Store linki (resmi API ile okunur) ya da ürün açıklaması. Google Play için açıklamayı elle yapıştır. APK dosyaları ve canlı tarayıcı gezintisi şimdilik desteklenmez.' },
+      { q: 'Sonuçlar ne kadar güvenilir?', a: 'Personalar sentetiktir ve gerçek kullanıcıların yerini tutmaz. Sonuçları fikir ve hipotez üretmek için kullan, önemli kararları gerçek kullanıcılarla doğrula. Web ve mağaza girişlerinde yalnızca metin değerlendirilir.' },
     ],
   },
   study: {
@@ -305,6 +309,94 @@ export const tr = {
     created: 'Çalışma başlatıldı. Aşağıdan ilerlemeyi izleyebilirsin.',
     loginNeeded: 'Çalışma oluşturmak için admin girişi gerekir.',
     experimental: 'Not (beta): Sonuç özeti, gerçek MatrAIx çıktısıyla henüz canlı doğrulanmadı. Hızlı test modu yalnızca akışı sınar, anlamlı sonuç üretmez.',
+  },
+  guide: {
+    'title': 'Kılavuz',
+    'intro': 'Adım adım: personaları seç, bir çalışma oluştur, çalıştır ve sonuçları oku. Ekran görüntüleri gerçek arayüzden alındı.',
+    'tocTitle': 'Adımlar',
+    'shotAlt': 'Ekran görüntüsü',
+    'steps': [
+      {
+        't': 'Giriş yap',
+        'd': 'Sol menüden Admin sayfasına git ve e-posta ile şifrenle giriş yap. Persona ve kılavuz sayfalarını herkes görür; çalışma oluşturmak ve simülasyon başlatmak için admin girişi gerekir.',
+        'tip': 'Şifreyi değiştirmek için sunucuda scripts/hash-password.mjs ile yeni bir hash üret ve .env dosyasını güncelle.',
+      },
+      {
+        't': 'Panele göz at',
+        'd': 'Panel görev, persona ve dil sayısını gösterir. Admin olarak girince çalıştırma sayısı, başarı oranı, seviyen ve sistem hazırlığı da görünür.',
+        'tip': 'Sistem hazırlığı "Eksikler var" diyorsa Admin sayfasındaki durum kartına bak.',
+      },
+      {
+        't': 'Personaları keşfet',
+        'd': 'İki havuz var: ülke bazlı sentetik personalar (50 ülke) ve MatrAIx örnek veri seti. Ülke seçicisiyle bir veya birden fazla ülke seç; bölge, alt bölge, yaş, yaşam evresi, ekonomik motivasyon ve risk toleransıyla daralt.',
+        'tip': '"Sadece internet kullanıcıları" kutusu dijital ürün testleri için varsayılan olarak açıktır.',
+      },
+      {
+        't': 'Toplu seç',
+        'd': 'Toplu seçim kutusu ile filtredekilerin tümünü, rastgele N personayı veya ülke başına N personayı seçersin. En fazla 100 persona seçilir. Alt çubuktaki "Simülasyonda kullan" seçimi taşır.',
+        'tip': 'Ülkeleri karşılaştırmak için "Ülke başına seç" en dengeli örneği verir.',
+      },
+      {
+        't': 'Persona detayı',
+        'd': 'Bir karta tıklayarak profili aç: yaş, cinsiyet, bölge, yaşam evresi, gelir düzeyi, ekonomik motivasyon, risk toleransı, ana dil ve para birimi. Sentetik personalarda "Sentetik" rozeti görünür.',
+        'tip': 'Ülke bazlı personalar gerçek kişileri temsil etmez.',
+      },
+      {
+        't': 'Çalışma oluştur: kaynak',
+        'd': 'Ne test edeceğini seç: anket, web sitesi URL, mobil uygulama mağaza linki veya ürün/hizmet açıklaması. Web sitesi ve App Store için "İçeriği getir" sayfa metnini sunucu tarafından çeker.',
+        'tip': 'Google Play için açıklamayı elle yapıştır; APK desteklenmez.',
+      },
+      {
+        't': 'Soruları hazırla',
+        'd': 'Bir şablon seç (web sitesi, mağaza, ürün) ya da 5–10 sorunu kendin yaz. JSON, CSV veya satır satır soruları "İçe aktar" ile ekleyebilirsin. Her soruya tür, seçenek ve gerekçe isteği ekle.',
+        'tip': 'Satır biçimi: "Soru | A | B | C" tek seçim, "Soru [text]" serbest metin.',
+      },
+      {
+        't': 'Çalıştır ve sonuçları oku',
+        'd': 'Hedef kitleyi (seçili personalar veya rastgele örnek) ve modu seç. Hızlı test akışı doğrular, API key istemez. Gerçek çalıştırma model API key ister. Bitince "Sonuçlar" ile soru bazlı dağılımları, "Çıktı" ile günlüğü gör.',
+        'tip': 'İlk denemede az persona ve hızlı test kullan; gerçek çalıştırmalar maliyet doğurur.',
+      },
+      {
+        't': 'Sistem ayarları',
+        'd': 'Admin sayfasında MatrAIx kurulumunu, sistem durumunu ve ülke verisini yönet. "World Bank ile yenile" ülke istatistiklerini günceller; API key değerleri sunucudaki .env dosyasına yazılır.',
+        'tip': 'Sunucunun dış internet erişimi gerekir.',
+      },
+    ],
+    'examplesTitle': 'Örnek çalışmalar',
+    'examplesIntro': 'Her örnek, çalışma oluşturucuyu hazır soru ve açıklamayla doldurur. Düzenleyip kendi ürününe uyarlayabilirsin. Örneklerdeki ürünler kurgusaldır.',
+    'load': 'Örneği yükle',
+    'loaded': 'Örnek yüklendi. Çalışma oluştur sayfasında düzenleyebilirsin.',
+    'loadedCountry': 'Her ülkeden {n} persona da seçildi.',
+    'learnTitle': 'Bu örnekte neye bakılır',
+    'limitsTitle': 'Sınırlar ve dürüst notlar',
+    'limits': ['Personalar sentetiktir ve gerçek kullanıcıların yerini tutmaz; keşif ve hipotez üretimi içindir.', 'Ülke bazlı havuzda yaş, kentleşme, gelir ve işsizlik ülke istatistiklerinden gelir; yaşam evresi, ekonomik motivasyon ve risk toleransı sezgiseldir.', 'Başlangıç ülke verisi yaklaşıktır. Admin sayfasından World Bank ile yenile.', 'Web sitesi ve mağaza girişleri yalnızca metni okur. Görsel tasarım, video, JavaScript ile oluşan içerik ve uygulamanın kendisi değerlendirilmez. APK ve canlı tarayıcı gezintisi şimdilik yok.', 'Görev içeriği İngilizcedir; personalar İngilizce okur ve yanıtlar.', 'Gerçek çalıştırmalar model API maliyeti doğurur.'],
+    'ex': {
+      'coffee': {
+        'title': 'Kahve aboneliği fikir testi',
+        'summary': 'Kurgusal bir abonelik ürününü Türkiye ve Almanya personalarıyla değerlendir. Örnek, her ülkeden 5 persona seçer (toplu seçim).',
+        'learn': ['İlgi ve satın alma niyeti ülkeler arasında nasıl değişiyor?', 'Fiyat algısı (ucuz, adil, pahalı) ve satın almayı engelleyenler', 'Şu an ne kullanıyorlar?'],
+      },
+      'landing': {
+        'title': 'Açılış sayfası değerlendirmesi',
+        'summary': 'Bir web sayfasının metnini personalara okut: anlaşılırlık, güven ve sonraki adım. Kendi sayfan için URL yazıp "İçeriği getir"e bas.',
+        'learn': ['Teklif ilk okumada anlaşılıyor mu?', 'Güven ve eksik bilgi: fiyat, kanıt, nasıl çalışır', 'Tereddütlerin tek cümlelik özeti'],
+      },
+      'store': {
+        'title': 'Uygulama mağazası sayfası',
+        'summary': 'Bir mağaza listelemesinin (ad, fiyat, puan, açıklama) indirme kararına etkisi. App Store linkini yapıştırarak kendi uygulamanı çekebilirsin.',
+        'learn': ['İndirme niyeti ve fiyat adaleti', 'Hangi listeleme öğesi kararı belirliyor?', 'Gelir modeli tercihi ve endişeler'],
+      },
+      'pricing': {
+        'title': 'Abonelik fiyat algısı',
+        'summary': 'Dört fiyat sorusuyla (çok ucuz, kelepir, pahalı, çok pahalı) kabul edilebilir fiyat aralığını keşfet; plan tercihi ve geçiş isteği de sorulur.',
+        'learn': ['Kabul edilebilir fiyat aralığı', 'Plan tercihi dağılımı', 'İndirimle geçiş isteği'],
+      },
+      'support': {
+        'title': 'Müşteri hizmeti deneyimi (5 soru)',
+        'summary': 'Kısa bir NPS tarzı anket: tavsiye, memnuniyet, en önemli etken, ne farklı olmalıydı ve öncelikli düzeltme.',
+        'learn': ['Tavsiye ve memnuniyet dağılımı', 'Hangi etken en çok önemli?', 'Önce düzeltilecek tek şey'],
+      },
+    },
   },
   credits: {
     title: 'Credits',

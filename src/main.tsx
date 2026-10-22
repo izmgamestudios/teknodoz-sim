@@ -4,6 +4,7 @@ import App from './App'
 import { AuthProvider } from './auth'
 import { I18nProvider } from './i18n'
 import { SelectionProvider } from './selection'
+import { StudyDraftProvider } from './studyDraft'
 import { ThemeProvider } from './theme'
 import './index.css'
 
@@ -13,7 +14,9 @@ createRoot(document.getElementById('root')!).render(
       <ThemeProvider>
         <AuthProvider>
           <SelectionProvider>
-            <App />
+            <StudyDraftProvider>
+              <App />
+            </StudyDraftProvider>
           </SelectionProvider>
         </AuthProvider>
       </ThemeProvider>

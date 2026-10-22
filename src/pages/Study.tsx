@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ApiError, api } from '../api'
 import { useAuth } from '../auth'
 import RunList from '../components/RunList'
@@ -6,10 +6,10 @@ import type { PageId } from '../config'
 import { useI18n } from '../i18n'
 import { blank, MAX_QUESTIONS, parseImport, type DraftQuestion, type QType } from '../importers'
 import { useSelection } from '../selection'
+import { useStudyDraft, type SourceType } from '../studyDraft'
 import { TEMPLATES, type TemplateId } from '../studyTemplates'
 import { MODELS } from '../tasks'
 
-type SourceType = 'survey' | 'website' | 'appstore' | 'product'
 type Notice = { kind: 'info' | 'warn' | 'error'; text: string }
 
 const card = 'rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900'
@@ -34,6 +34,7 @@ export default function Study({ go }: { go: (p: PageId) => void }) {
   const errs = t.study.errors as Record<string, string>
   const { admin, loading } = useAuth()
   const selection = useSelection()
+  const { draft, clearDraft } = useStudyDraft()
   const [src, setSrc] = useState<SourceType>('survey')
   const [url, setUrl] = useState('')
   const [title, setTitle] = useState('')
@@ -52,6 +53,19 @@ export default function Study({ go }: { go: (p: PageId) => void }) {
   const [error, setError] = useState('')
   const [started, setStarted] = useState(false)
   const [tick, setTick] = useState(0)
+
+  useEffect(() => {
+    if (!draft) return
+    setSrc(draft.src)
+    setTitle(draft.title)
+    setBrief(draft.brief)
+    setUrl(draft.url ?? '')
+    setQuestions(draft.questions.map((q) => ({ ...q, options: [...q.options] })))
+    setPristine(false)
+    setNotice(null)
+    setStarted(false)
+    clearDraft()
+  }, [draft, clearDraft])
 
   const urlSource = src === 'website' || src === 'appstore'
   const valid = useMemo(

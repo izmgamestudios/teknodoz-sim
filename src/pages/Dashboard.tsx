@@ -54,6 +54,9 @@ export default function Dashboard({ go }: { go: (p: PageId) => void }) {
           <button type="button" onClick={() => go('personas')} className="rounded-lg border border-slate-300 px-4 py-2 text-sm dark:border-slate-700">
             {t.dashboard.ctaPersonas}
           </button>
+          <button type="button" onClick={() => go('guide')} className="rounded-lg border border-slate-300 px-4 py-2 text-sm dark:border-slate-700">
+            {t.dashboard.ctaGuide}
+          </button>
         </div>
       </div>
 
