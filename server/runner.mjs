@@ -60,13 +60,15 @@ function persist() {
 
 const slug = (s) => s.replace(/[^a-z0-9]+/gi, '-').toLowerCase()
 
-function stepsFor(kind, p) {
+export function stepsFor(kind, p) {
   if (kind === 'setup') {
     const steps = []
     if (!existsSync(MATRAIX_DIR)) {
       steps.push({ cmd: 'git', args: ['clone', '--depth', '1', MATRAIX_REPO, MATRAIX_DIR], cwd: ROOT })
     }
-    steps.push({ cmd: 'uv', args: ['venv', '--python', '3.12'], cwd: MATRAIX_DIR })
+    if (!existsSync(join(MATRAIX_DIR, '.venv'))) {
+      steps.push({ cmd: 'uv', args: ['venv', '--python', '3.12'], cwd: MATRAIX_DIR })
+    }
     steps.push({ cmd: 'uv', args: ['pip', 'install', '-e', '.'], cwd: MATRAIX_DIR })
     return steps
   }
