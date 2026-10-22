@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Sidebar from './components/Sidebar'
 import Credits from './pages/Credits'
+import Simulations from './pages/Simulations'
 import Placeholder from './pages/Placeholder'
 import type { PageId } from './config'
 
@@ -20,9 +21,7 @@ export default function App() {
         {page === 'personas' && (
           <Placeholder title="Personalar" text="Sanal kullanıcı personalarını keşfet ve seç." />
         )}
-        {page === 'runs' && (
-          <Placeholder title="Simülasyonlar" text="Anket, chatbot, web ve uygulama simülasyonlarını çalıştır." />
-        )}
+        {page === 'runs' && <Simulations />}
         {page === 'credits' && <Credits />}
       </main>
     </div>
