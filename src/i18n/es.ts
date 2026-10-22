@@ -114,6 +114,7 @@ export const es: Dict = {
   },
   soon: 'Próximamente — en desarrollo dentro del acceso anticipado beta.',
   kinds: { survey: 'Encuesta', chat: 'Chatbot', web: 'Web', 'os-app': 'App', 'computer-use': 'Computadora' },
+  methods: { concept: 'Prueba de concepto', pricing: 'Prueba de precios', mvt: 'Prueba multivariante (MVT)', usability: 'Usabilidad', funnel: 'Abandono del embudo', comprehension: 'Comprensión' },
   sim: {
     title: 'Simulaciones',
     intro: 'Elige una tarea, ajusta las opciones e inicia la simulación directamente aquí.',
@@ -125,6 +126,7 @@ export const es: Dict = {
     history: 'Historial de ejecuciones', noRuns: 'Aún no hay ejecuciones.', cancel: 'Cancelar', log: 'Salida', hideLog: 'Ocultar',
     status: { queued: 'En cola', running: 'En ejecución', done: 'Completada', failed: 'Fallida', canceled: 'Cancelada' },
     selectedPersonas: '{n} personas seleccionadas: se usan en lugar del número (solo ejecuciones reales).', clearSelection: 'Limpiar selección', pickPersonas: 'Elegir personas',
+    methodLabel: 'Método de prueba',
     setupRun: 'Instalación',
     errors: {
       busy: 'Hay otra ejecución en curso.', invalid_task: 'Tarea no válida.', invalid_sample_size: 'El número de personas debe ser de 1 a 100.',
@@ -158,6 +160,7 @@ export const es: Dict = {
       { q: '¿Tiene costo? ¿Necesito una API key?', a: 'La prueba rápida no necesita API key. Las ejecuciones reales usan la API key del modelo configurada en el servidor; el costo de uso se paga al proveedor del modelo.' },
       { q: '¿Por qué las tareas se ejecutan en inglés?', a: 'El contenido de las tareas de MatrAIx (preguntas, escenarios) está en inglés. La interfaz, los títulos y las descripciones se traducen a tu idioma.' },
       { q: '¿Cómo obtengo acceso o soporte?', a: 'Mediante los enlaces de correo, WhatsApp y LinkedIn de la página de Créditos.' },
+      { q: '¿Qué métodos de prueba se admiten?', a: 'Las pruebas de concepto, de precios (Van Westendorp), multivariantes (MVT, basadas en elección), de recorrido de usabilidad, de abandono del embudo y de comprensión de informes funcionan con simulación de personas. Las pruebas de carga/estrés y la ingeniería del caos son pruebas de sistema, no el objetivo de la simulación de personas; usa herramientas como k6 o Locust. Un bandido multibrazo es un algoritmo de reparto de tráfico: puede alimentarse con resultados de personas, pero aún no está incluido.' },
     ],
   },
   credits: {
@@ -184,5 +187,12 @@ export const es: Dict = {
     'example-computer-use-ios_photo-access-review': { title: 'Revisión de acceso a fotos (iOS)', desc: 'Las personas abren los ajustes de Privacidad de iOS, eligen una app que usa fotos y deciden el nivel de acceso más restrictivo (completo, fotos seleccionadas, ninguno).' },
     'example-computer-use-linux_note-to-csv': { title: 'De nota a CSV (Linux)', desc: 'Las personas convierten una nota corta en un CSV con las columnas item, quantity y priority y explican la estructura elegida.' },
     'example-computer-use-macos_calendar-reminder-handoff': { title: 'Calendario + recordatorio (macOS)', desc: 'Las personas crean un evento de Calendario (revisión con el dentista) y un Recordatorio (llevar la tarjeta del seguro) y guardan un resumen de traspaso.' },
+    'tk_teklif-studyosu_concept-feedback': { title: 'Teklif Stüdyosu: Opinión sobre el concepto', desc: 'Freelancers y dueños de estudios pequeños reaccionan al generador de presupuestos Teklif Stüdyosu: cómo presupuestan hoy, problemas, valor percibido, función principal, preocupaciones e intención de probarlo.' },
+    'tk_teklif-studyosu_pricing-sensitivity': { title: 'Teklif Stüdyosu: Sensibilidad al precio (Van Westendorp)', desc: 'Las personas indican a qué precios la herramienta parece demasiado barata, una ganga, cara y demasiado cara, y eligen entre Free, Pro, Studio y un plan vitalicio de pago único.' },
+    'tk_teklif-studyosu_mvt-landing-page': { title: 'Teklif Stüdyosu: Prueba multivariante de la landing page', desc: 'Las personas eligen entre variantes de landing page en cuatro comparaciones equilibradas que cubren todas las combinaciones de titular, texto del botón y línea de precio, para poder estimar el efecto de cada elemento.' },
+    'tk_teklif-studyosu_usability-walkthrough': { title: 'Teklif Stüdyosu: Recorrido de usabilidad', desc: 'Las personas recorren mentalmente seis pasos del primer uso (cabecera, módulos, multiplicadores, plan de pagos, resumen, exportación) y valoran la facilidad, el primer clic, los términos poco claros y los puntos de bloqueo previstos.' },
+    'tk_ayak-izi_concept-feedback': { title: 'Huella digital: Opinión sobre el concepto', desc: 'Dueños de negocio valoran el análisis de madurez digital de 14 pasos: práctica actual, confianza en una puntuación autoevaluada, resultado más valioso, intercambio de datos y disposición a pagar.' },
+    'tk_ayak-izi_funnel-dropoff': { title: 'Huella digital: Abandono del embudo', desc: 'Las personas dicen en qué punto del flujo de 14 pasos abandonarían, cuánto tiempo dedicarían, cómo manejan respuestas desconocidas y preguntas financieras sensibles y qué aumentaría la finalización.' },
+    'tk_ayak-izi_report-comprehension': { title: 'Huella digital: Comprensión del informe', desc: 'Las personas leen una página de resultados de ejemplo (puntuación 62/100) y dicen cómo la interpretan, qué corregirían primero, cuán creíble y accionable les parece y su siguiente paso.' },
   },
 }

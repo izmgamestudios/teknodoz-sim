@@ -114,6 +114,7 @@ export const de: Dict = {
   },
   soon: 'Demnächst – wird im Rahmen des Beta-Zugangs entwickelt.',
   kinds: { survey: 'Umfrage', chat: 'Chatbot', web: 'Web', 'os-app': 'App', 'computer-use': 'Computer' },
+  methods: { concept: 'Konzepttest', pricing: 'Preistest', mvt: 'Multivariater Test (MVT)', usability: 'Usability', funnel: 'Funnel-Abbruch', comprehension: 'Verständlichkeit' },
   sim: {
     title: 'Simulationen',
     intro: 'Wähle eine Aufgabe, stelle die Optionen ein und starte die Simulation direkt hier.',
@@ -125,6 +126,7 @@ export const de: Dict = {
     history: 'Verlauf', noRuns: 'Noch keine Läufe.', cancel: 'Abbrechen', log: 'Ausgabe', hideLog: 'Ausblenden',
     status: { queued: 'Wartet', running: 'Läuft', done: 'Abgeschlossen', failed: 'Fehlgeschlagen', canceled: 'Abgebrochen' },
     selectedPersonas: '{n} Personas ausgewählt: werden statt der Anzahl genutzt (nur echte Läufe).', clearSelection: 'Auswahl löschen', pickPersonas: 'Personas wählen',
+    methodLabel: 'Testmethode',
     setupRun: 'Einrichtung',
     errors: {
       busy: 'Es läuft bereits ein anderer Lauf.', invalid_task: 'Ungültige Aufgabe.', invalid_sample_size: 'Die Anzahl der Personas muss 1–100 sein.',
@@ -158,6 +160,7 @@ export const de: Dict = {
       { q: 'Kostet es etwas? Brauche ich einen API-Key?', a: 'Der Schnelltest braucht keinen API-Key. Echte Läufe nutzen den auf dem Server hinterlegten Modell-API-Key; die Nutzungskosten gehen an den Modellanbieter.' },
       { q: 'Warum laufen die Aufgaben auf Englisch?', a: 'Die MatrAIx-Inhalte (Umfragefragen, Szenarien) sind englisch. Oberfläche, Aufgabentitel und Beschreibungen werden in deine Sprache übersetzt.' },
       { q: 'Wie erhalte ich Zugang oder Support?', a: 'Über die E-Mail-, WhatsApp- und LinkedIn-Links auf der Credits-Seite.' },
+      { q: 'Welche Testmethoden werden unterstützt?', a: 'Konzept-, Preis- (Van Westendorp), multivariate (MVT, auswahlbasiert), Usability-Walkthrough-, Funnel-Abbruch- und Berichtsverständlichkeits-Tests laufen mit Persona-Simulation. Last-/Stresstests und Chaos Engineering sind Systemtests und nicht der Zweck der Persona-Simulation; dafür eignen sich Tools wie k6 oder Locust. Ein Multi-Armed-Bandit ist ein Algorithmus zur Traffic-Verteilung: Er kann mit Persona-Ergebnissen gespeist werden, ist aber noch nicht enthalten.' },
     ],
   },
   credits: {
@@ -184,5 +187,12 @@ export const de: Dict = {
     'example-computer-use-ios_photo-access-review': { title: 'Prüfung des Foto-Zugriffs (iOS)', desc: 'Personas öffnen die iOS-Datenschutzeinstellungen, wählen eine App, die Fotos nutzt, und entscheiden über die restriktivste Zugriffsstufe (voll, ausgewählte Fotos, keiner).' },
     'example-computer-use-linux_note-to-csv': { title: 'Notiz zu CSV bereinigen (Linux)', desc: 'Personas wandeln eine kurze Notiz in eine CSV-Datei mit den Spalten item, quantity und priority um und erklären ihre Strukturwahl.' },
     'example-computer-use-macos_calendar-reminder-handoff': { title: 'Kalender + Erinnerung (macOS)', desc: 'Personas legen einen Kalendereintrag (Zahnarzt-Nachsorge) und eine Erinnerung (Versicherungskarte mitbringen) an und speichern eine Übergabe-Zusammenfassung.' },
+    'tk_teklif-studyosu_concept-feedback': { title: 'Teklif Stüdyosu: Konzept-Feedback', desc: 'Freelancer und Inhaber kleiner Studios reagieren auf den Angebotsrechner Teklif Stüdyosu: wie sie heute Angebote erstellen, Schmerzpunkte, wahrgenommener Nutzen, wichtigste Funktion, Bedenken und Testbereitschaft.' },
+    'tk_teklif-studyosu_pricing-sensitivity': { title: 'Teklif Stüdyosu: Preissensibilität (Van Westendorp)', desc: 'Personas nennen die Preise, bei denen das Tool zu billig, ein Schnäppchen, teuer und zu teuer wirkt, und wählen zwischen Free, Pro, Studio und einem einmaligen Lifetime-Plan.' },
+    'tk_teklif-studyosu_mvt-landing-page': { title: 'Teklif Stüdyosu: Multivariater Landingpage-Test', desc: 'Personas wählen in vier ausgewogenen Paarvergleichen zwischen Landingpage-Varianten, die alle Kombinationen aus Überschrift, Button-Text und Preiszeile abdecken, sodass der Effekt jedes Elements geschätzt werden kann.' },
+    'tk_teklif-studyosu_usability-walkthrough': { title: 'Teklif Stüdyosu: Usability-Walkthrough', desc: 'Personas gehen sechs Schritte der Erstnutzung (Kopfdaten, Module, Multiplikatoren, Zahlungsplan, Zusammenfassung, Export) gedanklich durch und bewerten Einfachheit, ersten Klick, unklare Begriffe und erwartete Stolperstellen.' },
+    'tk_ayak-izi_concept-feedback': { title: 'Digitaler Fußabdruck: Konzept-Feedback', desc: 'Unternehmer beurteilen die 14-stufige Analyse der digitalen Reife: aktuelle Praxis, Vertrauen in einen selbst eingeschätzten Score, wertvollstes Ergebnis, Datenweitergabe und Zahlungsbereitschaft.' },
+    'tk_ayak-izi_funnel-dropoff': { title: 'Digitaler Fußabdruck: Funnel-Abbruch', desc: 'Personas sagen, wo im 14-stufigen Ablauf sie aussteigen würden, wie viel Zeit sie investieren, wie sie mit unbekannten Antworten und heiklen Finanzfragen umgehen und was die Abschlussquote erhöhen würde.' },
+    'tk_ayak-izi_report-comprehension': { title: 'Digitaler Fußabdruck: Berichtsverständlichkeit', desc: 'Personas lesen eine beispielhafte Ergebnisseite (Score 62/100) und sagen, wie sie sie deuten, was sie zuerst beheben würden, wie glaubwürdig und umsetzbar sie wirkt und was sie als Nächstes tun.' },
   },
 }

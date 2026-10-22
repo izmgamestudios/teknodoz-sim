@@ -1,0 +1,132 @@
+schemaVersion: '1.0'
+id: tk_ayak_izi_funnel_dropoff_v1
+title: Digital Footprint Analysis Funnel Drop-off
+description: Imagine starting the Digital Footprint Analysis for your own business. Tell us where you would slow
+  down or quit and what would keep you going.
+questions:
+- id: q0
+  prompt: After reading the intro, I would start the assessment. Rate from 1 (strongly disagree) to 5 (strongly
+    agree).
+  type: likert
+  construct: start_intent
+  required: true
+  minValue: 1
+  maxValue: 5
+- id: q1
+  prompt: How long would you be willing to spend on a free assessment like this?
+  type: single_choice
+  construct: time_tolerance
+  required: true
+  options:
+  - id: q1_under_5
+    label: Up to 5 minutes
+  - id: q1_5_to_10
+    label: 5 to 10 minutes
+  - id: q1_10_to_20
+    label: 10 to 20 minutes
+  - id: q1_over_20
+    label: More than 20 minutes if the result is valuable
+- id: q2
+  prompt: At which point would you most likely stop?
+  type: single_choice
+  construct: likely_abandon_step
+  required: true
+  options:
+  - id: q2_profile
+    label: 1. Profile information
+  - id: q2_identity
+    label: 2. Corporate identity and strategy (brand foundations, mission, vision, values)
+  - id: q2_market
+    label: 3. Market and target audience (including market research and competition)
+  - id: q2_social
+    label: 4. Social media quality (channels, content, engagement)
+  - id: q2_website
+    label: 5. Website and content (technical quality, SEO, conversion)
+  - id: q2_tech
+    label: 6. Technology infrastructure
+  - id: q2_finance
+    label: 7. Budget and finance management
+  - id: q2_team
+    label: 8. Team and management
+  - id: q2_swot
+    label: 9. SWOT analysis
+  - id: q2_canvas
+    label: 10. Business Model Canvas
+  - id: q2_finish
+    label: I would finish the whole assessment
+  askRationale: true
+- id: q3
+  prompt: Which changes would make you more likely to finish? (Select all that apply)
+  type: multi_choice
+  construct: completion_levers
+  required: true
+  options:
+  - id: q3_save_resume
+    label: Save and resume later
+  - id: q3_skip_unknown
+    label: Skip a question when I do not know the answer
+  - id: q3_short_version
+    label: A 5-minute short version first
+  - id: q3_benchmark_preview
+    label: A preview of how I compare to similar businesses
+  - id: q3_examples
+    label: Examples next to each question
+  - id: q3_progress
+    label: A visible progress bar and score
+  - id: q3_none
+    label: Nothing would change my behavior
+- id: q4
+  prompt: When you do not know an answer, you would...
+  type: single_choice
+  construct: unknown_answer_behavior
+  required: true
+  options:
+  - id: q4_honest_none
+    label: Pick the 'none / I do not know' option honestly
+  - id: q4_guess_optimistic
+    label: Guess optimistically
+  - id: q4_skip_return
+    label: Skip it and come back later
+  - id: q4_stop
+    label: Stop the assessment
+- id: q5
+  prompt: Budget and finance questions would make you...
+  type: single_choice
+  construct: finance_sensitivity
+  required: true
+  options:
+  - id: q5_truthful
+    label: Answer truthfully
+  - id: q5_approximate
+    label: Answer approximately
+  - id: q5_skip
+    label: Skip them
+  - id: q5_stop
+    label: Stop the assessment
+- id: q6
+  prompt: Seeing my score and progress while I answer motivates me to continue. Rate from 1 (strongly disagree)
+    to 5 (strongly agree).
+  type: likert
+  construct: progress_motivation
+  required: true
+  minValue: 1
+  maxValue: 5
+- id: q7
+  prompt: Which format would you prefer?
+  type: single_choice
+  construct: format_preference
+  required: true
+  options:
+  - id: q7_one_go
+    label: All 14 steps in one go
+  - id: q7_short_then_deep
+    label: A short version first, with an optional deep dive
+  - id: q7_split_days
+    label: Spread across several days with save and resume
+- id: q8
+  prompt: I would answer at least 80% of the questions. Rate from 1 (strongly disagree) to 5 (strongly agree).
+  type: likert
+  construct: completion_intent
+  required: true
+  minValue: 1
+  maxValue: 5

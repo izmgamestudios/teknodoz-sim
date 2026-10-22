@@ -5,7 +5,7 @@ import { useSelection } from '../selection'
 import RunList from '../components/RunList'
 import type { PageId } from '../config'
 import { useI18n } from '../i18n'
-import { KINDS, MODELS, TASKS, type TaskKind } from '../tasks'
+import { KINDS, METHODS, MODELS, TASKS, type Method, type SimTask, type TaskKind } from '../tasks'
 
 const card = 'rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900'
 const input =
@@ -16,6 +16,7 @@ export default function Simulations({ go }: { go: (p: PageId) => void }) {
   const { admin, loading } = useAuth()
   const { ids, clear } = useSelection()
   const [kind, setKind] = useState<TaskKind | 'all'>('all')
+  const [method, setMethod] = useState<Method | 'all'>('all')
   const [taskId, setTaskId] = useState(TASKS[0].id)
   const [sampleSize, setSampleSize] = useState(4)
   const [seed, setSeed] = useState(42)
@@ -25,7 +26,16 @@ export default function Simulations({ go }: { go: (p: PageId) => void }) {
   const [error, setError] = useState('')
   const [tick, setTick] = useState(0)
 
-  const visible = useMemo(() => TASKS.filter((x) => kind === 'all' || x.kind === kind), [kind])
+  const matches = (x: SimTask, k: TaskKind | 'all', m: Method | 'all') =>
+    (k === 'all' || x.kind === k) && (m === 'all' || x.method === m)
+  const visible = useMemo(() => TASKS.filter((x) => matches(x, kind, method)), [kind, method])
+  const usedMethods = useMemo(() => METHODS.filter((m) => TASKS.some((x) => x.method === m)), [])
+  const pick = (k: TaskKind | 'all', m: Method | 'all') => {
+    setKind(k)
+    setMethod(m)
+    const first = TASKS.find((x) => matches(x, k, m))
+    if (first) setTaskId(first.id)
+  }
   const task = TASKS.find((x) => x.id === taskId) ?? TASKS[0]
   const text = t.tasks[task.id]
 
@@ -53,16 +63,27 @@ export default function Simulations({ go }: { go: (p: PageId) => void }) {
           <button
             key={k}
             type="button"
-            onClick={() => {
-              setKind(k)
-              const first = TASKS.find((x) => k === 'all' || x.kind === k)
-              if (first) setTaskId(first.id)
-            }}
+            onClick={() => pick(k, 'all')}
             className={`rounded-full px-3 py-1 text-xs font-medium ${
-              kind === k ? 'bg-brand text-white' : 'bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
+              kind === k && method === 'all' ? 'bg-brand text-white' : 'bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
             }`}
           >
             {k === 'all' ? t.sim.all : t.kinds[k]}
+          </button>
+        ))}
+      </div>
+      <div className="mt-2 flex flex-wrap items-center gap-2">
+        <span className="text-xs text-slate-500">{t.sim.methodLabel}:</span>
+        {usedMethods.map((m) => (
+          <button
+            key={m}
+            type="button"
+            onClick={() => pick('all', m)}
+            className={`rounded-full px-3 py-1 text-xs font-medium ${
+              method === m ? 'bg-brand text-white' : 'bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
+            }`}
+          >
+            {t.methods[m]}
           </button>
         ))}
       </div>
@@ -82,6 +103,11 @@ export default function Simulations({ go }: { go: (p: PageId) => void }) {
           <span className="mr-2 rounded-full bg-brand/15 px-2 py-0.5 text-xs font-medium text-brand-dark dark:text-indigo-300">
             {t.kinds[task.kind]}
           </span>
+          {task.method && (
+            <span className="mr-2 rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-300">
+              {t.methods[task.method]}
+            </span>
+          )}
           {text?.desc}
           {task.needsDocker && <p className="mt-2 text-xs text-amber-600 dark:text-amber-300">{t.sim.dockerWarn}</p>}
         </div>

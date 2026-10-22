@@ -1,0 +1,122 @@
+schemaVersion: '1.0'
+id: tk_ayak_izi_concept_feedback_v1
+title: Digital Footprint Analysis Concept Feedback
+description: We're gathering reactions to Digital Footprint Analysis, a guided digital maturity assessment for brands.
+  Read the brief, then tell us whether it would be useful to you.
+questions:
+- id: q0
+  prompt: How do you assess your brand's digital presence today?
+  type: single_choice
+  construct: current_assessment_method
+  required: true
+  options:
+  - id: q0_never
+    label: I have never formally assessed it
+  - id: q0_adhoc
+    label: Ad hoc, on my own
+  - id: q0_agency_audit
+    label: An audit from an agency or consultant
+  - id: q0_checklist
+    label: A checklist or template
+  - id: q0_paid_tools
+    label: Paid analytics or audit tools
+- id: q1
+  prompt: I would start this assessment if a colleague sent me the link. Rate from 1 (strongly disagree) to 5 (strongly
+    agree).
+  type: likert
+  construct: start_intent
+  required: true
+  minValue: 1
+  maxValue: 5
+- id: q2
+  prompt: A single maturity score would be useful to me. Rate from 1 (strongly disagree) to 5 (strongly agree).
+  type: likert
+  construct: score_usefulness
+  required: true
+  minValue: 1
+  maxValue: 5
+- id: q3
+  prompt: I would trust a score built from my own self-assessed answers. Rate from 1 (strongly disagree) to 5 (strongly
+    agree).
+  type: likert
+  construct: score_trust
+  required: true
+  minValue: 1
+  maxValue: 5
+- id: q4
+  prompt: Which output would you value the most?
+  type: single_choice
+  construct: most_valuable_output
+  required: true
+  options:
+  - id: q4_overall_score
+    label: The overall score
+  - id: q4_category_breakdown
+    label: The breakdown by category
+  - id: q4_roadmap
+    label: A prioritized roadmap of actions
+  - id: q4_benchmark
+    label: A comparison against similar businesses
+  - id: q4_canvas_swot
+    label: The SWOT and Business Model Canvas summary
+  askRationale: true
+- id: q5
+  prompt: Who would most likely use it in your organization?
+  type: single_choice
+  construct: likely_user
+  required: true
+  options:
+  - id: q5_owner
+    label: The owner or founder
+  - id: q5_marketing
+    label: A marketing manager
+  - id: q5_agency
+    label: An agency running it for its clients
+  - id: q5_nobody
+    label: Nobody; it is not relevant to us
+- id: q6
+  prompt: Would you share your results with the agency behind it to get tailored recommendations?
+  type: single_choice
+  construct: share_results
+  required: true
+  options:
+  - id: q6_yes_email
+    label: Yes, with my email address
+  - id: q6_anonymous_only
+    label: Only anonymously
+  - id: q6_no
+    label: 'No'
+- id: q7
+  prompt: What would you realistically pay for a detailed report?
+  type: single_choice
+  construct: report_willingness_to_pay
+  required: true
+  options:
+  - id: q7_nothing
+    label: Nothing; it must be free
+  - id: q7_up_to_20
+    label: Up to $20
+  - id: q7_20_to_50
+    label: $20 to $50
+  - id: q7_50_to_100
+    label: $50 to $100
+  - id: q7_over_100
+    label: More than $100
+- id: q8
+  prompt: I would recommend this assessment to another business owner. Rate from 1 (strongly disagree) to 5 (strongly
+    agree).
+  type: likert
+  construct: recommend
+  required: true
+  minValue: 1
+  maxValue: 5
+- id: would_try_beta
+  prompt: Would you try a beta version?
+  type: single_choice
+  construct: beta_intent
+  required: true
+  options:
+  - id: 'true'
+    label: 'Yes'
+  - id: 'false'
+    label: 'No'

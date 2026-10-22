@@ -114,6 +114,7 @@ export const en: Dict = {
   },
   soon: 'Coming soon — in development as part of the beta early access.',
   kinds: { survey: 'Survey', chat: 'Chatbot', web: 'Web', 'os-app': 'App', 'computer-use': 'Computer' },
+  methods: { concept: 'Concept test', pricing: 'Pricing test', mvt: 'Multivariate test (MVT)', usability: 'Usability', funnel: 'Funnel drop-off', comprehension: 'Comprehension' },
   sim: {
     title: 'Simulations',
     intro: 'Pick a task, set the options, and start the simulation right here.',
@@ -125,6 +126,7 @@ export const en: Dict = {
     history: 'Run history', noRuns: 'No runs yet.', cancel: 'Cancel', log: 'Output', hideLog: 'Hide',
     status: { queued: 'Queued', running: 'Running', done: 'Completed', failed: 'Failed', canceled: 'Canceled' },
     selectedPersonas: '{n} personas selected: used instead of the count (real runs only).', clearSelection: 'Clear selection', pickPersonas: 'Pick personas',
+    methodLabel: 'Test method',
     setupRun: 'Setup',
     errors: {
       busy: 'Another run is in progress.', invalid_task: 'Invalid task.', invalid_sample_size: 'Number of personas must be 1–100.',
@@ -158,6 +160,7 @@ export const en: Dict = {
       { q: 'Does it cost anything? Do I need an API key?', a: 'Quick test mode needs no API key. Real runs use the model API key configured on the server; usage costs are paid to the model provider.' },
       { q: 'Why do tasks run in English?', a: 'The MatrAIx task content (survey questions, scenarios) is in English. The interface, task titles and descriptions are translated to your chosen language.' },
       { q: 'How do I get access or support?', a: 'Reach us through the email, WhatsApp and LinkedIn links on the Credits page.' },
+      { q: 'Which test methods are supported?', a: 'Concept, pricing (Van Westendorp), multivariate (MVT, choice-based), usability walkthrough, funnel drop-off and report-comprehension tests run with persona simulation. Load/stress testing and chaos engineering are system tests, not what persona simulation is for; use tools such as k6 or Locust. A multi-armed bandit is a traffic-allocation algorithm: it can be fed by persona results but is not added yet.' },
     ],
   },
   credits: {
@@ -184,5 +187,12 @@ export const en: Dict = {
     'example-computer-use-ios_photo-access-review': { title: 'Photo Access Review (iOS)', desc: 'Personas open iOS Privacy settings, pick an app that uses photos and decide the least-permissive access level (full, selected photos, none).' },
     'example-computer-use-linux_note-to-csv': { title: 'Note to CSV Cleanup (Linux)', desc: 'Personas turn a short note into a CSV file with item, quantity and priority columns and explain their structure choice.' },
     'example-computer-use-macos_calendar-reminder-handoff': { title: 'Calendar + Reminder Handoff (macOS)', desc: 'Personas create a Calendar event (dentist follow-up) and a Reminder (bring insurance card) and save a handoff summary.' },
+    'tk_teklif-studyosu_concept-feedback': { title: 'Teklif Studio: Concept Feedback', desc: 'Freelancers and small-studio owners react to the Teklif Stüdyosu quote builder: how they quote today, pain points, perceived value, top feature, concerns and intent to try.' },
+    'tk_teklif-studyosu_pricing-sensitivity': { title: 'Teklif Studio: Price Sensitivity (Van Westendorp)', desc: 'Personas state the prices at which the quote builder feels too cheap, a bargain, expensive and too expensive, and choose between Free, Pro, Studio and a one-time lifetime plan.' },
+    'tk_teklif-studyosu_mvt-landing-page': { title: 'Teklif Studio: Landing Page Multivariate Test', desc: 'Personas choose between landing-page variants in four balanced head-to-head sets that cover every combination of headline, button label and pricing line, so each element\'s effect can be estimated.' },
+    'tk_teklif-studyosu_usability-walkthrough': { title: 'Teklif Studio: Usability Walkthrough', desc: 'Personas mentally walk through six first-use steps (header, modules, multipliers, payment plan, summary, export) and rate ease, first clicks, unclear terms and expected failure points.' },
+    'tk_ayak-izi_concept-feedback': { title: 'Digital Footprint: Concept Feedback', desc: 'Business owners judge the 14-step digital maturity assessment: current practice, trust in a self-assessed score, most valuable output, data sharing and willingness to pay.' },
+    'tk_ayak-izi_funnel-dropoff': { title: 'Digital Footprint: Funnel Drop-off', desc: 'Personas say where in the 14-step flow they would quit, how much time they would invest, how they handle unknown answers and sensitive finance questions, and what would raise completion.' },
+    'tk_ayak-izi_report-comprehension': { title: 'Digital Footprint: Report Comprehension', desc: 'Personas read an illustrative result page (score 62/100) and say how they interpret it, what they would fix first, how credible and actionable it feels, and their next step.' },
   },
 }

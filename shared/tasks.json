@@ -1,23 +1,155 @@
 {
-  "models": ["anthropic/claude-sonnet-4-6", "anthropic/claude-haiku-4-5", "openai/gpt-5"],
+  "models": [
+    "anthropic/claude-sonnet-4-6",
+    "anthropic/claude-haiku-4-5",
+    "openai/gpt-5"
+  ],
   "tasks": [
-    { "id": "example-survey_product-feedback", "kind": "survey", "needsDocker": false },
-    { "id": "survey_annual-checkup-habits", "kind": "survey", "needsDocker": false },
-    { "id": "survey_price-sensitivity-hasbro-gaming-candy-land", "kind": "survey", "needsDocker": false },
-    { "id": "chat_meal-planning-nutrition", "kind": "chat", "needsDocker": false },
-    { "id": "chat_openbb-corporate-action-honesty", "kind": "chat", "needsDocker": false },
-    { "id": "example-chat-api_support_chatbot", "kind": "chat", "needsDocker": false },
-    { "id": "example-chat-mcp_support_chatbot", "kind": "chat", "needsDocker": false },
-    { "id": "web_mit-ocw-course-choice", "kind": "web", "needsDocker": true },
-    { "id": "web_notion-plan-comparison", "kind": "web", "needsDocker": true },
-    { "id": "example-web-browser-use_laptop-choice", "kind": "web", "needsDocker": true },
-    { "id": "example-web-cocoa_plan-choice", "kind": "web", "needsDocker": true },
-    { "id": "example-web-cua_bookshop-choice", "kind": "web", "needsDocker": true },
-    { "id": "example-web-playwright_quote-choice", "kind": "web", "needsDocker": true },
-    { "id": "os-app-ios_news-subscription-decision", "kind": "os-app", "needsDocker": true },
-    { "id": "os-app-macos_stocks-mu-sentiment", "kind": "os-app", "needsDocker": true },
-    { "id": "example-computer-use-ios_photo-access-review", "kind": "computer-use", "needsDocker": true },
-    { "id": "example-computer-use-linux_note-to-csv", "kind": "computer-use", "needsDocker": true },
-    { "id": "example-computer-use-macos_calendar-reminder-handoff", "kind": "computer-use", "needsDocker": true }
+    {
+      "id": "example-survey_product-feedback",
+      "kind": "survey",
+      "needsDocker": false
+    },
+    {
+      "id": "survey_annual-checkup-habits",
+      "kind": "survey",
+      "needsDocker": false
+    },
+    {
+      "id": "survey_price-sensitivity-hasbro-gaming-candy-land",
+      "kind": "survey",
+      "needsDocker": false
+    },
+    {
+      "id": "chat_meal-planning-nutrition",
+      "kind": "chat",
+      "needsDocker": false
+    },
+    {
+      "id": "chat_openbb-corporate-action-honesty",
+      "kind": "chat",
+      "needsDocker": false
+    },
+    {
+      "id": "example-chat-api_support_chatbot",
+      "kind": "chat",
+      "needsDocker": false
+    },
+    {
+      "id": "example-chat-mcp_support_chatbot",
+      "kind": "chat",
+      "needsDocker": false
+    },
+    {
+      "id": "web_mit-ocw-course-choice",
+      "kind": "web",
+      "needsDocker": true
+    },
+    {
+      "id": "web_notion-plan-comparison",
+      "kind": "web",
+      "needsDocker": true
+    },
+    {
+      "id": "example-web-browser-use_laptop-choice",
+      "kind": "web",
+      "needsDocker": true
+    },
+    {
+      "id": "example-web-cocoa_plan-choice",
+      "kind": "web",
+      "needsDocker": true
+    },
+    {
+      "id": "example-web-cua_bookshop-choice",
+      "kind": "web",
+      "needsDocker": true
+    },
+    {
+      "id": "example-web-playwright_quote-choice",
+      "kind": "web",
+      "needsDocker": true
+    },
+    {
+      "id": "os-app-ios_news-subscription-decision",
+      "kind": "os-app",
+      "needsDocker": true
+    },
+    {
+      "id": "os-app-macos_stocks-mu-sentiment",
+      "kind": "os-app",
+      "needsDocker": true
+    },
+    {
+      "id": "example-computer-use-ios_photo-access-review",
+      "kind": "computer-use",
+      "needsDocker": true
+    },
+    {
+      "id": "example-computer-use-linux_note-to-csv",
+      "kind": "computer-use",
+      "needsDocker": true
+    },
+    {
+      "id": "example-computer-use-macos_calendar-reminder-handoff",
+      "kind": "computer-use",
+      "needsDocker": true
+    },
+    {
+      "id": "tk_teklif-studyosu_concept-feedback",
+      "kind": "survey",
+      "needsDocker": false,
+      "custom": true,
+      "product": "teklif-studyosu",
+      "method": "concept"
+    },
+    {
+      "id": "tk_teklif-studyosu_pricing-sensitivity",
+      "kind": "survey",
+      "needsDocker": false,
+      "custom": true,
+      "product": "teklif-studyosu",
+      "method": "pricing"
+    },
+    {
+      "id": "tk_teklif-studyosu_mvt-landing-page",
+      "kind": "survey",
+      "needsDocker": false,
+      "custom": true,
+      "product": "teklif-studyosu",
+      "method": "mvt"
+    },
+    {
+      "id": "tk_teklif-studyosu_usability-walkthrough",
+      "kind": "survey",
+      "needsDocker": false,
+      "custom": true,
+      "product": "teklif-studyosu",
+      "method": "usability"
+    },
+    {
+      "id": "tk_ayak-izi_concept-feedback",
+      "kind": "survey",
+      "needsDocker": false,
+      "custom": true,
+      "product": "ayak-izi",
+      "method": "concept"
+    },
+    {
+      "id": "tk_ayak-izi_funnel-dropoff",
+      "kind": "survey",
+      "needsDocker": false,
+      "custom": true,
+      "product": "ayak-izi",
+      "method": "funnel"
+    },
+    {
+      "id": "tk_ayak-izi_report-comprehension",
+      "kind": "survey",
+      "needsDocker": false,
+      "custom": true,
+      "product": "ayak-izi",
+      "method": "comprehension"
+    }
   ]
 }

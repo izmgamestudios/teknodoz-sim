@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process'
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { randomUUID } from 'node:crypto'
@@ -7,6 +7,7 @@ import { randomUUID } from 'node:crypto'
 export const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 export const MATRAIX_DIR = join(ROOT, 'vendor', 'MatrAIx')
 const DATA_DIR = join(ROOT, 'data')
+const CUSTOM_TASKS_DIR = join(ROOT, 'custom-tasks')
 const RUNS_FILE = join(DATA_DIR, 'runs.json')
 const MATRAIX_REPO = 'https://github.com/MatrAIx-ai/MatrAIx-Persona-8B'
 const MAX_LOG = 200_000
@@ -135,11 +136,24 @@ function killGroup(pid) {
   }
 }
 
+export function syncCustomTasks(run) {
+  const dest = join(MATRAIX_DIR, 'application', 'tasks')
+  if (!existsSync(CUSTOM_TASKS_DIR) || !existsSync(dest)) return
+  try {
+    const names = readdirSync(CUSTOM_TASKS_DIR)
+    for (const name of names) cpSync(join(CUSTOM_TASKS_DIR, name), join(dest, name), { recursive: true, force: true })
+    append(run, `[synced ${names.length} Teknodoz custom tasks]\n`)
+  } catch (e) {
+    append(run, `custom task sync failed: ${e.message}\n`)
+  }
+}
+
 async function execute(run) {
   current = run
   run.status = 'running'
   run.startedAt = Date.now()
   try {
+    if (run.kind === 'simulation') syncCustomTasks(run)
     for (const step of stepsFor(run.kind, run.params)) {
       const code = await runStep(run, step)
       if (run.status === 'canceled') return
@@ -148,6 +162,7 @@ async function execute(run) {
         return
       }
     }
+    if (run.kind === 'setup') syncCustomTasks(run)
     run.status = 'done'
   } finally {
     run.endedAt = Date.now()

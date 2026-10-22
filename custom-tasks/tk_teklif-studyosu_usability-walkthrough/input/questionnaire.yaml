@@ -1,0 +1,129 @@
+schemaVersion: '1.0'
+id: tk_teklif_studyosu_usability_walkthrough_v1
+title: Teklif Studio Usability Walkthrough
+description: Imagine using Teklif Stüdyosu for the first time to prepare a quote for a client project. Walk through
+  the steps described in the brief and rate each one.
+questions:
+- id: s1_header
+  prompt: Step 1, filling in the quote header form. How easy would this be? 1 = very difficult, 7 = very easy.
+  type: likert
+  construct: ease_step_header
+  required: true
+  minValue: 1
+  maxValue: 7
+- id: s2_modules
+  prompt: Step 2, finding and adding the right modules. How easy would this be? 1 = very difficult, 7 = very easy.
+  type: likert
+  construct: ease_step_modules
+  required: true
+  minValue: 1
+  maxValue: 7
+- id: s3_multipliers
+  prompt: Step 3, understanding and adjusting the multipliers. How easy would this be? 1 = very difficult, 7 = very
+    easy.
+  type: likert
+  construct: ease_step_multipliers
+  required: true
+  minValue: 1
+  maxValue: 7
+- id: s4_payment
+  prompt: Step 4, choosing a payment plan and applying a discount. How easy would this be? 1 = very difficult, 7
+    = very easy.
+  type: likert
+  construct: ease_step_payment
+  required: true
+  minValue: 1
+  maxValue: 7
+- id: s5_summary
+  prompt: Step 5, reading the summary and the timeline. How easy would this be? 1 = very difficult, 7 = very easy.
+  type: likert
+  construct: ease_step_summary
+  required: true
+  minValue: 1
+  maxValue: 7
+- id: s6_export
+  prompt: Step 6, exporting the PDF and sending it. How easy would this be? 1 = very difficult, 7 = very easy.
+  type: likert
+  construct: ease_step_export
+  required: true
+  minValue: 1
+  maxValue: 7
+- id: fc_add
+  prompt: You want to add the 'Backend & API' module. Where do you click first?
+  type: single_choice
+  construct: first_click_add_module
+  required: true
+  options:
+  - id: fc_add_search
+    label: The 'Search module...' box
+  - id: fc_add_filters
+    label: The category or phase filters
+  - id: fc_add_add_button
+    label: The '+ Add' button on the module card
+  - id: fc_add_new_module
+    label: '''+ New module'''
+  - id: fc_add_unsure
+    label: I am not sure where to start
+- id: fc_rate
+  prompt: You want to change your hourly base rate. Where do you look first?
+  type: single_choice
+  construct: first_click_change_rate
+  required: true
+  options:
+  - id: fc_rate_multiplier_settings
+    label: The multiplier settings section
+  - id: fc_rate_summary
+    label: The quote summary panel
+  - id: fc_rate_module_card
+    label: The 'Edit' button on a module card
+  - id: fc_rate_header_form
+    label: The quote header form
+  - id: fc_rate_unsure
+    label: I am not sure
+- id: terms
+  prompt: Which labels or terms would you need explained? (Select all that apply)
+  type: multi_choice
+  construct: unclear_terms
+  required: true
+  options:
+  - id: terms_difficulty_multiplier
+    label: Difficulty multiplier (for example x1.25)
+  - id: terms_working_model
+    label: 'Working model: fixed project x1.25 or retainer x1.10'
+  - id: terms_ai_flag
+    label: 'AI assistance: included in budget vs. extra budget'
+  - id: terms_phases
+    label: Phase 1 / Phase 2 / Phase 3
+  - id: terms_effective_rate
+    label: Effective hourly rate
+  - id: terms_capacity_lanes
+    label: Weekly capacity and parallel lanes
+  - id: terms_none
+    label: None; everything is clear
+- id: stuck
+  prompt: Where do you expect to get stuck first?
+  type: single_choice
+  construct: expected_failure_point
+  required: true
+  options:
+  - id: stuck_header
+    label: The quote header form
+  - id: stuck_finding_modules
+    label: Finding the right modules among many
+  - id: stuck_multipliers
+    label: The multipliers
+  - id: stuck_payment_plan
+    label: The payment plan
+  - id: stuck_export
+    label: Exporting
+  - id: stuck_nowhere
+    label: Nowhere
+  askRationale: true
+- id: q_confidence
+  prompt: I could produce an accurate, client-ready quote on my first attempt. Rate from 1 (strongly disagree) to
+    5 (strongly agree).
+  type: likert
+  construct: first_attempt_confidence
+  required: true
+  minValue: 1
+  maxValue: 5

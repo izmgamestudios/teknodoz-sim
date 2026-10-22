@@ -1,4 +1,4 @@
-import type { TaskKind } from '../tasks'
+import type { Method, TaskKind } from '../tasks'
 
 export type TaskText = { title: string; desc: string }
 
@@ -118,6 +118,7 @@ export const tr = {
   kinds: {
     survey: 'Anket', chat: 'Chatbot', web: 'Web', 'os-app': 'Uygulama', 'computer-use': 'Bilgisayar',
   } as Record<TaskKind, string>,
+  methods: { concept: 'Konsept testi', pricing: 'Fiyat testi', mvt: 'Çok değişkenli test (MVT)', usability: 'Kullanılabilirlik', funnel: 'Huni terk analizi', comprehension: 'Anlaşılırlık' } as Record<Method, string>,
   sim: {
     title: 'Simülasyonlar',
     intro: 'Bir görev seç, ayarları belirle ve simülasyonu doğrudan buradan başlat.',
@@ -129,6 +130,7 @@ export const tr = {
     history: 'Çalıştırma geçmişi', noRuns: 'Henüz çalıştırma yok.', cancel: 'İptal et', log: 'Çıktı', hideLog: 'Gizle',
     status: { queued: 'Sırada', running: 'Çalışıyor', done: 'Tamamlandı', failed: 'Başarısız', canceled: 'İptal edildi' },
     selectedPersonas: '{n} persona seçili: sayı yerine bunlar kullanılır (yalnızca gerçek çalıştırmada).', clearSelection: 'Seçimi temizle', pickPersonas: 'Personaları seç',
+    methodLabel: 'Test yöntemi',
     setupRun: 'Kurulum',
     errors: {
       busy: 'Şu an başka bir çalıştırma sürüyor.', invalid_task: 'Geçersiz görev.', invalid_sample_size: 'Persona sayısı 1–100 olmalı.',
@@ -162,6 +164,7 @@ export const tr = {
       { q: 'Ücret var mı, API key gerekir mi?', a: 'Hızlı test modu API key gerektirmez. Gerçek çalıştırmalar sunucuda tanımlı model API key’ini kullanır; kullanım maliyeti model sağlayıcısına ödenir.' },
       { q: 'Görevler neden İngilizce çalışıyor?', a: 'MatrAIx görev içerikleri (anket soruları, senaryolar) İngilizcedir. Arayüz, görev başlıkları ve açıklamaları ise seçtiğin dile çevrilir.' },
       { q: 'Erişim ve destek için kime ulaşırım?', a: 'Credits sayfasındaki e-posta, WhatsApp ve LinkedIn bağlantılarından ulaşabilirsin.' },
+      { q: 'Hangi test yöntemleri destekleniyor?', a: 'Konsept, fiyat (Van Westendorp), çok değişkenli (MVT, seçim tabanlı), kullanılabilirlik yürüyüşü, huni terk ve rapor anlaşılırlığı testleri persona simülasyonuyla çalışır. Yük/stres testi ve kaos mühendisliği sistem testleridir, persona simülasyonunun konusu değildir; k6 veya Locust gibi araçlar gerekir. Çok kollu haydut ise bir trafik dağıtım algoritmasıdır; persona sonuçlarından beslenebilir ama henüz eklenmedi.' },
     ],
   },
   credits: {
@@ -188,6 +191,13 @@ export const tr = {
     'example-computer-use-ios_photo-access-review': { title: 'Fotoğraf Erişimi İncelemesi (iOS)', desc: 'Personalar iOS Gizlilik ayarlarını açar, fotoğraf kullanan bir uygulama seçer ve verecekleri en kısıtlı erişim düzeyine (tam, seçili fotoğraflar, hiçbiri) karar verir.' },
     'example-computer-use-linux_note-to-csv': { title: 'Notu CSV’ye Temizleme (Linux)', desc: 'Personalar kısa bir notu item, quantity, priority sütunlu bir CSV dosyasına dönüştürür ve yapı tercihini açıklar.' },
     'example-computer-use-macos_calendar-reminder-handoff': { title: 'Takvim + Hatırlatıcı Devri (macOS)', desc: 'Personalar bir Takvim etkinliği (diş hekimi kontrolü) ve bir Hatırlatıcı (sigorta kartını getir) oluşturur, özet bir devir dosyası kaydeder.' },
+    'tk_teklif-studyosu_concept-feedback': { title: 'Teklif Stüdyosu: Konsept Geri Bildirimi', desc: 'Serbest geliştiriciler ve küçük stüdyo sahipleri teklif hazırlayıcıya tepki verir: bugün nasıl teklif verdikleri, sıkıntılar, algılanan değer, en değerli özellik, endişeler ve deneme isteği.' },
+    'tk_teklif-studyosu_pricing-sensitivity': { title: 'Teklif Stüdyosu: Fiyat Hassasiyeti (Van Westendorp)', desc: 'Personalar, aracın ne zaman çok ucuz, kelepir, pahalı ve çok pahalı geldiğini belirtir; Free, Pro, Studio ve tek seferlik ömür boyu plan arasında seçim yapar.' },
+    'tk_teklif-studyosu_mvt-landing-page': { title: 'Teklif Stüdyosu: Açılış Sayfası Çok Değişkenli Testi', desc: 'Personalar, başlık, buton metni ve fiyat satırının tüm kombinasyonlarını kapsayan dört dengeli ikili karşılaştırmada açılış sayfası varyantlarından birini seçer; her öğenin etkisi ayrı ayrı kestirilebilir.' },
+    'tk_teklif-studyosu_usability-walkthrough': { title: 'Teklif Stüdyosu: Kullanılabilirlik Yürüyüşü', desc: 'Personalar ilk kullanımın altı adımını (künye, modüller, çarpanlar, tahsilat planı, özet, dışa aktarma) zihinsel olarak izler; kolaylık, ilk tıklama, anlaşılmayan terimler ve beklenen takılma noktalarını puanlar.' },
+    'tk_ayak-izi_concept-feedback': { title: 'Dijital Ayak İzi: Konsept Geri Bildirimi', desc: 'İşletme sahipleri 14 adımlı dijital olgunluk analizini değerlendirir: mevcut uygulama, kendi beyanına dayalı skora güven, en değerli çıktı, veri paylaşımı ve ödeme isteği.' },
+    'tk_ayak-izi_funnel-dropoff': { title: 'Dijital Ayak İzi: Huni Terk Analizi', desc: 'Personalar 14 adımlı akışta nerede bırakacaklarını, ne kadar zaman ayıracaklarını, bilmedikleri sorularla ve hassas finans sorularıyla nasıl başa çıkacaklarını ve neyin tamamlamayı artıracağını söyler.' },
+    'tk_ayak-izi_report-comprehension': { title: 'Dijital Ayak İzi: Rapor Anlaşılırlığı', desc: 'Personalar örnek bir sonuç sayfasını (62/100 skor) okur; nasıl yorumladıklarını, önce neyi düzelteceklerini, ne kadar inandırıcı ve uygulanabilir bulduklarını ve sonraki adımlarını söyler.' },
   } as Record<string, TaskText>,
 }
 

@@ -1,0 +1,80 @@
+schemaVersion: '1.0'
+id: tk_teklif_studyosu_mvt_landing_page_v1
+title: Teklif Studio Landing Page Multivariate Test
+description: We are comparing landing-page variants for Teklif Stüdyosu. You will see four head-to-head comparisons.
+  Pick the page that makes you more likely to try the product.
+questions:
+- id: set_1
+  prompt: 'Set 1: Which landing page would make you more likely to try the product?'
+  type: single_choice
+  construct: landing_choice_set_1
+  required: true
+  options:
+  - id: set_1_a
+    label: Option A
+  - id: set_1_b
+    label: Option B
+  - id: set_1_neither
+    label: Neither
+  askRationale: true
+- id: set_2
+  prompt: 'Set 2: Which landing page would make you more likely to try the product?'
+  type: single_choice
+  construct: landing_choice_set_2
+  required: true
+  options:
+  - id: set_2_a
+    label: Option A
+  - id: set_2_b
+    label: Option B
+  - id: set_2_neither
+    label: Neither
+  askRationale: true
+- id: set_3
+  prompt: 'Set 3: Which landing page would make you more likely to try the product?'
+  type: single_choice
+  construct: landing_choice_set_3
+  required: true
+  options:
+  - id: set_3_a
+    label: Option A
+  - id: set_3_b
+    label: Option B
+  - id: set_3_neither
+    label: Neither
+  askRationale: true
+- id: set_4
+  prompt: 'Set 4: Which landing page would make you more likely to try the product?'
+  type: single_choice
+  construct: landing_choice_set_4
+  required: true
+  options:
+  - id: set_4_a
+    label: Option A
+  - id: set_4_b
+    label: Option B
+  - id: set_4_neither
+    label: Neither
+  askRationale: true
+- id: q_driver
+  prompt: Which element influenced your choices the most?
+  type: single_choice
+  construct: decisive_element
+  required: true
+  options:
+  - id: q_driver_headline
+    label: The headline
+  - id: q_driver_button
+    label: The button label
+  - id: q_driver_pricing
+    label: The pricing line
+  - id: q_driver_none
+    label: None of them; the pages felt the same
+- id: q_clarity
+  prompt: After reading these pages I understand what the product does. Rate from 1 (strongly disagree) to 5 (strongly
+    agree).
+  type: likert
+  construct: message_clarity
+  required: true
+  minValue: 1
+  maxValue: 5

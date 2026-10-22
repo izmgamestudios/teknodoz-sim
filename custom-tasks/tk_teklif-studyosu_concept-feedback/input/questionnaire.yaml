@@ -1,0 +1,124 @@
+schemaVersion: '1.0'
+id: tk_teklif_studyosu_concept_feedback_v1
+title: Teklif Studio Concept Feedback
+description: We're gathering reactions to Teklif Stüdyosu, a quote builder for freelance developers and small studios.
+  Read the brief, then tell us how it fits how you quote work today.
+questions:
+- id: q0
+  prompt: How do you prepare client quotes today?
+  type: single_choice
+  construct: current_quoting_method
+  required: true
+  options:
+  - id: q0_spreadsheet
+    label: A spreadsheet I maintain myself
+  - id: q0_document
+    label: A Word or PDF template
+  - id: q0_email_numbers
+    label: A rough total written in an email or chat message
+  - id: q0_paid_tool
+    label: A paid quoting or invoicing tool
+  - id: q0_no_quotes
+    label: I rarely or never send formal quotes
+- id: q1
+  prompt: Which of these problems have you actually run into? (Select all that apply)
+  type: multi_choice
+  construct: pain_points
+  required: true
+  options:
+  - id: q1_underpricing
+    label: I underpriced a project and lost money
+  - id: q1_scope_creep
+    label: Scope crept and I had no basis to say no
+  - id: q1_justify_lines
+    label: A client asked me to justify the price line by line
+  - id: q1_slow
+    label: Preparing a quote takes too long
+  - id: q1_inconsistent
+    label: My quotes are inconsistent from client to client
+  - id: q1_payment_disputes
+    label: Payment schedules caused disagreements
+  - id: q1_none
+    label: None of these
+- id: q2
+  prompt: The value of this tool is clear to me. Rate from 1 (strongly disagree) to 5 (strongly agree).
+  type: likert
+  construct: value_clarity
+  required: true
+  minValue: 1
+  maxValue: 5
+- id: q3
+  prompt: I would try this tool for my next quote. Rate from 1 (strongly disagree) to 5 (strongly agree).
+  type: likert
+  construct: trial_intent
+  required: true
+  minValue: 1
+  maxValue: 5
+- id: q4
+  prompt: Which capability matters most to you?
+  type: single_choice
+  construct: most_valuable_feature
+  required: true
+  options:
+  - id: q4_modules_multipliers
+    label: Module catalog with hours and multipliers
+  - id: q4_payment_timeline
+    label: Payment plans and the Gantt timeline
+  - id: q4_market_comparison
+    label: Market comparison bands
+  - id: q4_export_contracts
+    label: PDF/PNG export and legal templates
+  - id: q4_local_privacy
+    label: Everything stays on my device
+  askRationale: true
+- id: q5
+  prompt: What is your biggest concern?
+  type: single_choice
+  construct: main_concern
+  required: true
+  options:
+  - id: q5_trust_numbers
+    label: I would not trust the numbers it produces
+  - id: q5_no_sync
+    label: Data lives only on one device, with no sync
+  - id: q5_learning_curve
+    label: Multipliers and modules look complicated to learn
+  - id: q5_generic_look
+    label: Quotes might look generic to my clients
+  - id: q5_no_concern
+    label: No real concern; I would just not need it
+- id: q6
+  prompt: Local-only storage (no account, no database) makes me...
+  type: single_choice
+  construct: local_storage_stance
+  required: true
+  options:
+  - id: q6_more_likely
+    label: More likely to use it
+  - id: q6_indifferent
+    label: Neither more nor less likely
+  - id: q6_less_likely
+    label: Less likely; I need access across devices
+- id: q7
+  prompt: I would recommend this tool to another freelancer or studio owner. Rate from 1 (strongly disagree) to
+    5 (strongly agree).
+  type: likert
+  construct: recommend
+  required: true
+  minValue: 1
+  maxValue: 5
+- id: would_try_beta
+  prompt: Would you try a beta version?
+  type: single_choice
+  construct: beta_intent
+  required: true
+  options:
+  - id: 'true'
+    label: 'Yes'
+  - id: 'false'
+    label: 'No'
+- id: q9
+  prompt: In one sentence, what would make you trust the price this tool produces?
+  type: free_text
+  construct: trust_drivers
+  required: true

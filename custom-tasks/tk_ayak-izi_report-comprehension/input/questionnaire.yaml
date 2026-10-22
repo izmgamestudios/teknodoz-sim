@@ -1,0 +1,114 @@
+schemaVersion: '1.0'
+id: tk_ayak_izi_report_comprehension_v1
+title: Digital Footprint Analysis Report Comprehension
+description: You have just completed the Digital Footprint Analysis. Read the illustrative result page below and
+  tell us how you understand it and what you would do next.
+questions:
+- id: q0
+  prompt: What does the overall score of 62 / 100 mean?
+  type: single_choice
+  construct: score_interpretation
+  required: true
+  options:
+  - id: q0_moderate
+    label: Moderate maturity with clear room to improve
+  - id: q0_excellent
+    label: Excellent; there is little to do
+  - id: q0_failing
+    label: Failing; the digital presence is in bad shape
+  - id: q0_cannot_tell
+    label: I cannot tell from this page
+- id: q1
+  prompt: Which area would you fix first?
+  type: single_choice
+  construct: first_priority
+  required: true
+  options:
+  - id: q1_identity
+    label: Corporate identity and strategy
+  - id: q1_market
+    label: Market and target audience
+  - id: q1_social
+    label: Social media quality
+  - id: q1_website
+    label: Website and content
+  - id: q1_tech
+    label: Technology infrastructure
+  - id: q1_finance
+    label: Budget and finance management
+  - id: q1_team
+    label: Team and management
+  askRationale: true
+- id: q2
+  prompt: I trust this score. Rate from 1 (strongly disagree) to 5 (strongly agree).
+  type: likert
+  construct: score_trust
+  required: true
+  minValue: 1
+  maxValue: 5
+- id: q3
+  prompt: After reading this page I know what to do next. Rate from 1 (strongly disagree) to 5 (strongly agree).
+  type: likert
+  construct: actionability
+  required: true
+  minValue: 1
+  maxValue: 5
+- id: q4
+  prompt: The report feels credible, not like generic marketing. Rate from 1 (strongly disagree) to 5 (strongly
+    agree).
+  type: likert
+  construct: credibility
+  required: true
+  minValue: 1
+  maxValue: 5
+- id: q5
+  prompt: Who would you share this report with?
+  type: single_choice
+  construct: sharing_audience
+  required: true
+  options:
+  - id: q5_nobody
+    label: Nobody
+  - id: q5_team
+    label: My team
+  - id: q5_manager
+    label: My manager or partners
+  - id: q5_clients
+    label: Clients or investors
+  - id: q5_public
+    label: I would publish it
+- id: q6
+  prompt: What is missing from this page? (Select all that apply)
+  type: multi_choice
+  construct: missing_elements
+  required: true
+  options:
+  - id: q6_benchmark
+    label: A comparison with similar businesses
+  - id: q6_cost
+    label: Cost estimates for each action
+  - id: q6_steps
+    label: A step-by-step plan
+  - id: q6_examples
+    label: Examples of good practice
+  - id: q6_timeline
+    label: A timeline
+  - id: q6_expert
+    label: A chance to talk with an expert
+  - id: q6_nothing
+    label: Nothing is missing
+- id: q7
+  prompt: What would you do next?
+  type: single_choice
+  construct: next_action
+  required: true
+  options:
+  - id: q7_book_call
+    label: Book a consultation with the agency behind the tool
+  - id: q7_diy
+    label: Work through the roadmap myself
+  - id: q7_forward
+    label: Forward it to my team
+  - id: q7_ignore
+    label: Close the page and do nothing
+  askRationale: true

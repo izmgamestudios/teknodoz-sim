@@ -1,0 +1,104 @@
+schemaVersion: '1.0'
+id: tk_teklif_studyosu_pricing_sensitivity_v1
+title: Teklif Studio Pricing Sensitivity
+description: We are testing prices for Teklif Stüdyosu. The plans below are hypothetical test stimuli. Answer as
+  yourself, using US dollars.
+questions:
+- id: vw_too_cheap
+  prompt: At what monthly price (USD) would this tool be so cheap that you would doubt its quality? Number only.
+  type: free_text
+  construct: price_too_cheap
+  required: true
+- id: vw_bargain
+  prompt: At what monthly price (USD) would you consider it a bargain, a great buy for the money? Number only.
+  type: free_text
+  construct: price_bargain
+  required: true
+- id: vw_expensive
+  prompt: At what monthly price (USD) would it start to feel expensive, but you would still consider it? Number
+    only.
+  type: free_text
+  construct: price_getting_expensive
+  required: true
+- id: vw_too_expensive
+  prompt: At what monthly price (USD) would it be too expensive to consider at all? Number only.
+  type: free_text
+  construct: price_too_expensive
+  required: true
+- id: q_model
+  prompt: Which way of paying would you prefer?
+  type: single_choice
+  construct: payment_model_preference
+  required: true
+  options:
+  - id: q_model_free_only
+    label: Stay on the Free plan
+  - id: q_model_monthly_pro
+    label: Pro, billed monthly
+  - id: q_model_studio
+    label: Studio, billed monthly
+  - id: q_model_lifetime
+    label: The $149 lifetime payment
+  - id: q_model_wont_pay
+    label: I would not pay for this kind of tool
+  askRationale: true
+- id: q_free_limit
+  prompt: Free is limited to 3 quotes a month with a watermark. You would...
+  type: single_choice
+  construct: free_plan_reaction
+  required: true
+  options:
+  - id: q_free_limit_stay_until_limit
+    label: Use Free until I hit the limit
+  - id: q_free_limit_pay_remove_watermark
+    label: Pay right away to remove the watermark
+  - id: q_free_limit_dealbreaker
+    label: Treat the limits as a dealbreaker and look for another tool
+  - id: q_free_limit_rarely_need_more
+    label: Rarely need more than 3 quotes anyway
+- id: q_justify
+  prompt: What would justify paying for it?
+  type: single_choice
+  construct: payment_justification
+  required: true
+  options:
+  - id: q_justify_win_projects
+    label: Helping me win or keep one more project
+  - id: q_justify_save_time
+    label: Saving time on every quote
+  - id: q_justify_look_professional
+    label: Making my quotes look professional
+  - id: q_justify_market_data
+    label: The market comparison data
+  - id: q_justify_nothing
+    label: Nothing; I would not pay
+- id: q_lifetime
+  prompt: A one-time $149 lifetime option is...
+  type: single_choice
+  construct: lifetime_attitude
+  required: true
+  options:
+  - id: q_lifetime_more_attractive
+    label: More attractive than a subscription
+  - id: q_lifetime_same
+    label: About as attractive as a subscription
+  - id: q_lifetime_less_attractive
+    label: Less attractive than a subscription
+  - id: q_lifetime_vendor_risk
+    label: Worrying; the product might disappear
+- id: q_intent_pro
+  prompt: At $9 per month, I would subscribe to Pro within the first month. Rate from 1 (strongly disagree) to 5
+    (strongly agree).
+  type: likert
+  construct: pro_purchase_intent
+  required: true
+  minValue: 1
+  maxValue: 5
+- id: q_fair
+  prompt: The proposed pricing feels fair for what the tool offers. Rate from 1 (strongly disagree) to 5 (strongly
+    agree).
+  type: likert
+  construct: price_fairness
+  required: true
+  minValue: 1
+  maxValue: 5
