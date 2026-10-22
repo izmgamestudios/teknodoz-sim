@@ -6,6 +6,7 @@ import Faq from './pages/Faq'
 import Dashboard from './pages/Dashboard'
 import Personas from './pages/Personas'
 import Simulations from './pages/Simulations'
+import Study from './pages/Study'
 import type { PageId } from './config'
 
 export default function App() {
@@ -18,6 +19,7 @@ export default function App() {
         {page === 'dashboard' && <Dashboard go={setPage} />}
         {page === 'personas' && <Personas go={setPage} />}
         {page === 'runs' && <Simulations go={setPage} />}
+        {page === 'study' && <Study go={setPage} />}
         {page === 'faq' && <Faq />}
         {page === 'admin' && <Admin />}
         {page === 'credits' && <Credits />}

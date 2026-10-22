@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { api, type RunDetail, type RunStatus, type RunSummary } from '../api'
 import { useI18n } from '../i18n'
+import ResultsView from './ResultsView'
 
 const badge: Record<RunStatus, string> = {
   queued: 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200',
@@ -15,6 +16,7 @@ export default function RunList({ refreshKey = 0 }: { refreshKey?: number }) {
   const [runs, setRuns] = useState<RunSummary[]>([])
   const [openId, setOpenId] = useState<string | null>(null)
   const [detail, setDetail] = useState<RunDetail | null>(null)
+  const [view, setView] = useState<'log' | 'results'>('log')
 
   const load = useCallback(async () => {
     try {
@@ -41,7 +43,7 @@ export default function RunList({ refreshKey = 0 }: { refreshKey?: number }) {
   return (
     <ul className="space-y-2">
       {runs.map((r) => {
-        const title = r.kind === 'setup' ? t.sim.setupRun : t.tasks[r.params.taskId ?? '']?.title ?? r.params.taskId
+        const title = r.kind === 'setup' ? t.sim.setupRun : r.params.title ?? t.tasks[r.params.taskId ?? '']?.title ?? r.params.taskId
         return (
           <li key={r.id} className="rounded-xl border border-slate-200 bg-white p-3 text-sm dark:border-slate-800 dark:bg-slate-900">
             <div className="flex flex-wrap items-center gap-2">
@@ -60,21 +62,40 @@ export default function RunList({ refreshKey = 0 }: { refreshKey?: number }) {
                 className="text-brand underline"
                 onClick={() => {
                   setDetail(null)
-                  setOpenId(openId === r.id ? null : r.id)
+                  setView('log')
+                  setOpenId(openId === r.id && view === 'log' ? null : r.id)
                 }}
               >
-                {openId === r.id ? t.sim.hideLog : t.sim.log}
+                {openId === r.id && view === 'log' ? t.sim.hideLog : t.sim.log}
               </button>
+              {r.kind === 'simulation' && r.params.mode === 'auto' && (
+                <button
+                  type="button"
+                  className="text-brand underline"
+                  onClick={() => {
+                    setDetail(null)
+                    setView('results')
+                    setOpenId(openId === r.id && view === 'results' ? null : r.id)
+                  }}
+                >
+                  {openId === r.id && view === 'results' ? t.sim.hideLog : t.sim.results}
+                </button>
+              )}
               {r.status === 'running' && (
                 <button type="button" className="text-red-500 underline" onClick={() => cancel(r.id)}>
                   {t.sim.cancel}
                 </button>
               )}
             </div>
-            {openId === r.id && (
+            {openId === r.id && view === 'log' && (
               <pre className="mt-2 max-h-72 overflow-auto rounded-lg bg-slate-100 p-3 text-xs dark:bg-slate-950">
                 {detail?.id === r.id ? detail.log || '…' : '…'}
               </pre>
+            )}
+            {openId === r.id && view === 'results' && (
+              <div className="mt-2">
+                <ResultsView runId={r.id} active={r.status === 'running'} />
+              </div>
             )}
           </li>
         )

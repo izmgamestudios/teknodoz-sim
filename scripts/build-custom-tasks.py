@@ -688,6 +688,9 @@ def main():
         shutil.rmtree(OUT)
     for t in TASKS:
         build(t)
+    # question labels for the results view (kept outside the task folders so MatrAIx never sees them)
+    with open(os.path.join(ROOT, "shared", "questionnaires.json"), "w", encoding="utf-8") as f:
+        json.dump({t["id"]: {"title": t["title"], "questions": t["questions"]} for t in TASKS}, f, ensure_ascii=False, separators=(",", ":"))
     print(f"{len(TASKS)} tasks -> custom-tasks/")
 
 

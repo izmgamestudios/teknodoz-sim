@@ -4,6 +4,7 @@ import { join } from 'node:path'
 import { ROOT } from './paths.mjs'
 import { loadCountryPool } from './countries.mjs'
 import { toMatraixPersona, toYaml } from './personagen.mjs'
+import { getStudy, STUDY_ID_RE, syncStudyTask } from './studies.mjs'
 import { randomUUID } from 'node:crypto'
 
 export { ROOT }
@@ -63,6 +64,7 @@ function persist() {
 }
 
 const slug = (s) => s.replace(/[^a-z0-9]+/gi, '-').toLowerCase()
+export const jobNameFor = (taskId, n) => `teknodoz-${slug(taskId)}-n${n}`
 
 export function stepsFor(kind, p) {
   if (kind === 'setup') {
@@ -80,7 +82,7 @@ export function stepsFor(kind, p) {
   if (p.mode === 'smoke') {
     return [{ cmd: 'uv', args: ['run', 'matraix', 'smoke', task], cwd: MATRAIX_DIR }]
   }
-  const name = `teknodoz-${slug(p.taskId)}-n${p.sampleSize}`
+  const name = jobNameFor(p.taskId, p.sampleSize)
   return [
     {
       cmd: 'uv',
@@ -179,6 +181,7 @@ async function execute(run) {
   try {
     if (run.kind === 'simulation') {
       syncCustomTasks(run)
+      if (syncStudyTask(run.params.taskId, join(MATRAIX_DIR, 'application', 'tasks'))) append(run, '[synced study task]\n')
       writeCountryDataset(run)
     }
     for (const step of stepsFor(run.kind, run.params)) {
@@ -217,15 +220,26 @@ export function validate(body) {
       pool = 'country'
     }
   }
-  if (!TASK_IDS.has(taskId)) return { error: 'invalid_task' }
+  if (!TASK_IDS.has(taskId) && !(STUDY_ID_RE.test(taskId) && getStudy(taskId))) return { error: 'invalid_task' }
   if (!Number.isInteger(sampleSize) || sampleSize < 1 || sampleSize > 100) return { error: 'invalid_sample_size' }
   if (!Number.isInteger(seed) || seed < 0 || seed > 1_000_000_000) return { error: 'invalid_seed' }
   if (!MODELS.has(model)) return { error: 'invalid_model' }
   return { params: { taskId, sampleSize: personaIds.length || sampleSize, seed, model, mode, personaIds, pool } }
 }
 
+export const isBusy = () => Boolean(current)
+
+/** Validate run options without a task (used when the task is created afterwards). */
+export function validateRunOptions(body) {
+  return validate({ ...body, taskId: catalog.tasks[0].id })
+}
+
 export function startRun(kind, params) {
   if (current) return { error: 'busy' }
+  if (kind === 'simulation') {
+    params = { ...params, jobName: jobNameFor(params.taskId, params.sampleSize) }
+    if (STUDY_ID_RE.test(params.taskId)) params.title = getStudy(params.taskId)?.title
+  }
   const run = {
     id: randomUUID(), kind, params, status: 'queued', createdAt: Date.now(), log: '',
   }

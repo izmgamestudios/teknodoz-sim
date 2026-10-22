@@ -3,7 +3,10 @@ import {
 } from './auth.mjs'
 import { gzipSync } from 'node:zlib'
 import { loadCountryPool, refreshFromWorldBank } from './countries.mjs'
-import { cancelRun, getRun, listRuns, startRun, systemStatus, validate } from './runner.mjs'
+import { cancelRun, getRun, isBusy, listRuns, startRun, systemStatus, validate, validateRunOptions } from './runner.mjs'
+import { createStudy, listStudies, previewSource, validateStudyInput } from './studies.mjs'
+import { collectResults } from './results.mjs'
+import { FetchError } from './safefetch.mjs'
 
 const MAX_BODY = 10_000
 
@@ -117,6 +120,30 @@ export async function handleApi(req, res, pathname) {
       return r.error ? send(res, 409, { error: r.error }) : send(res, 202, { id: r.run.id })
     }
 
+    if (pathname === '/api/studies' && method === 'GET') return send(res, 200, { studies: listStudies() })
+
+    if (pathname === '/api/studies/preview' && method === 'POST') {
+      const body = await readBody(req)
+      try {
+        return send(res, 200, await previewSource({ type: String(body.type ?? ''), url: String(body.url ?? '') }))
+      } catch (e) {
+        if (e instanceof FetchError) return send(res, 400, { error: e.code, detail: e.detail })
+        return send(res, 502, { error: 'fetch_failed' })
+      }
+    }
+
+    if (pathname === '/api/studies' && method === 'POST') {
+      const body = await readBody(req)
+      const input = validateStudyInput(body)
+      if (input.error) return send(res, 400, { error: input.error, index: input.index })
+      const opts = validateRunOptions(body)
+      if (opts.error) return send(res, 400, { error: opts.error })
+      if (isBusy()) return send(res, 409, { error: 'busy' })
+      const study = createStudy(input.study)
+      const r = startRun('simulation', { ...opts.params, taskId: study.id })
+      return r.error ? send(res, 409, { error: r.error }) : send(res, 202, { studyId: study.id, runId: r.run.id })
+    }
+
     if (pathname === '/api/runs' && method === 'GET') return send(res, 200, { runs: listRuns() })
 
     if (pathname === '/api/runs' && method === 'POST') {
@@ -126,11 +153,12 @@ export async function handleApi(req, res, pathname) {
       return r.error ? send(res, 409, { error: r.error }) : send(res, 202, { id: r.run.id })
     }
 
-    const m = pathname.match(/^\/api\/runs\/([0-9a-f-]{36})(\/cancel)?$/)
+    const m = pathname.match(/^\/api\/runs\/([0-9a-f-]{36})(\/cancel|\/results)?$/)
     if (m) {
       const run = getRun(m[1])
       if (!run) return send(res, 404, { error: 'not_found' })
-      if (m[2] && method === 'POST') return send(res, 200, { ok: cancelRun(run.id) })
+      if (m[2] === '/cancel' && method === 'POST') return send(res, 200, { ok: cancelRun(run.id) })
+      if (m[2] === '/results' && method === 'GET') return send(res, 200, collectResults(run))
       if (!m[2] && method === 'GET') return send(res, 200, { ...run, pid: undefined })
     }
 
