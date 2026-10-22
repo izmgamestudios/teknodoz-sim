@@ -16,6 +16,9 @@ const RUN_TIMEOUT_MS = 2 * 60 * 60 * 1000
 const catalog = JSON.parse(readFileSync(join(ROOT, 'shared', 'tasks.json'), 'utf8'))
 const TASK_IDS = new Set(catalog.tasks.map((t) => t.id))
 const MODELS = new Set(catalog.models)
+const PERSONA_IDS = new Set(
+  JSON.parse(readFileSync(join(ROOT, 'shared', 'personas.json'), 'utf8')).personas.map((x) => x.id),
+)
 
 const SECRET_ENV = ['ADMIN_PASSWORD_HASH', 'SESSION_SECRET']
 
@@ -78,8 +81,9 @@ function stepsFor(kind, p) {
       args: [
         'run', 'python', 'application/scripts/generate_application_job.py',
         '--task', task, '--execution-mode', 'auto',
-        '--sample-size', String(p.sampleSize), '--seed', String(p.seed),
-        '--model-name', p.model, '--name', name,
+        ...(p.personaIds.length ? [] : ['--sample-size', String(p.sampleSize)]),
+        '--seed', String(p.seed), '--model-name', p.model, '--name', name,
+        ...(p.personaIds.length ? ['--persona-ids', ...p.personaIds] : []),
       ],
       cwd: MATRAIX_DIR,
     },
@@ -157,11 +161,16 @@ export function validate(body) {
   const seed = Number(body?.seed)
   const model = String(body?.model ?? '')
   const mode = body?.mode === 'auto' ? 'auto' : 'smoke'
+  const rawIds = Array.isArray(body?.personaIds) ? body.personaIds : []
+  if (rawIds.length > 100 || !rawIds.every((id) => typeof id === 'string' && PERSONA_IDS.has(id))) {
+    return { error: 'invalid_personas' }
+  }
+  const personaIds = [...new Set(rawIds)]
   if (!TASK_IDS.has(taskId)) return { error: 'invalid_task' }
   if (!Number.isInteger(sampleSize) || sampleSize < 1 || sampleSize > 100) return { error: 'invalid_sample_size' }
   if (!Number.isInteger(seed) || seed < 0 || seed > 1_000_000_000) return { error: 'invalid_seed' }
   if (!MODELS.has(model)) return { error: 'invalid_model' }
-  return { params: { taskId, sampleSize, seed, model, mode } }
+  return { params: { taskId, sampleSize: personaIds.length || sampleSize, seed, model, mode, personaIds } }
 }
 
 export function startRun(kind, params) {

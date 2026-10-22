@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { ApiError, api } from '../api'
 import { useAuth } from '../auth'
+import { useSelection } from '../selection'
 import RunList from '../components/RunList'
 import type { PageId } from '../config'
 import { useI18n } from '../i18n'
@@ -13,6 +14,7 @@ const input =
 export default function Simulations({ go }: { go: (p: PageId) => void }) {
   const { t } = useI18n()
   const { admin, loading } = useAuth()
+  const { ids, clear } = useSelection()
   const [kind, setKind] = useState<TaskKind | 'all'>('all')
   const [taskId, setTaskId] = useState(TASKS[0].id)
   const [sampleSize, setSampleSize] = useState(4)
@@ -31,7 +33,7 @@ export default function Simulations({ go }: { go: (p: PageId) => void }) {
     setBusy(true)
     setError('')
     try {
-      await api('/api/runs', { method: 'POST', body: { taskId, sampleSize, seed, model, mode } })
+      await api('/api/runs', { method: 'POST', body: { taskId, sampleSize, seed, model, mode, personaIds: mode === 'auto' ? ids : [] } })
       setTick((n) => n + 1)
     } catch (e) {
       const code = e instanceof ApiError ? e.code : 'server_error'
@@ -82,6 +84,16 @@ export default function Simulations({ go }: { go: (p: PageId) => void }) {
           </span>
           {text?.desc}
           {task.needsDocker && <p className="mt-2 text-xs text-amber-600 dark:text-amber-300">{t.sim.dockerWarn}</p>}
+        </div>
+        <div className="text-sm sm:col-span-2 rounded-lg border border-dashed border-slate-300 p-3 dark:border-slate-700">
+          {ids.length > 0 ? (
+            <>
+              {t.sim.selectedPersonas.replace('{n}', String(ids.length))}{' '}
+              <button type="button" onClick={clear} className="text-brand underline">{t.sim.clearSelection}</button>
+            </>
+          ) : (
+            <button type="button" onClick={() => go('personas')} className="text-brand underline">{t.sim.pickPersonas}</button>
+          )}
         </div>
         <label className="text-sm">
           {t.sim.personas}

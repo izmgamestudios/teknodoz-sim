@@ -25,7 +25,7 @@ export type RunSummary = {
   createdAt: number
   startedAt?: number
   endedAt?: number
-  params: { taskId?: string; sampleSize?: number; seed?: number; model?: string; mode?: 'smoke' | 'auto' }
+  params: { taskId?: string; sampleSize?: number; seed?: number; model?: string; mode?: 'smoke' | 'auto'; personaIds?: string[] }
 }
 
 export type RunDetail = RunSummary & { log: string }
