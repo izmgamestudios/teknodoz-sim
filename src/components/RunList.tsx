@@ -49,6 +49,9 @@ export default function RunList({ refreshKey = 0 }: { refreshKey?: number }) {
             <div className="flex flex-wrap items-center gap-2">
               <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${badge[r.status]}`}>{t.sim.status[r.status]}</span>
               <span className="font-medium">{title}</span>
+              {r.kind === 'simulation' && r.params.mode === 'smoke' && (
+                <span className="rounded-full bg-amber-400/15 px-2 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-300">{t.sim.syntheticBadge}</span>
+              )}
               {r.kind === 'simulation' && (
                 <span className="text-xs text-slate-500">
                   {r.params.mode === 'smoke' ? t.sim.modeSmoke.split(' (')[0] : r.params.model} · n={r.params.sampleSize}
@@ -68,7 +71,7 @@ export default function RunList({ refreshKey = 0 }: { refreshKey?: number }) {
               >
                 {openId === r.id && view === 'log' ? t.sim.hideLog : t.sim.log}
               </button>
-              {r.kind === 'simulation' && r.params.mode === 'auto' && (
+              {r.kind === 'simulation' && (r.status === 'done' || r.params.mode === 'auto') && (
                 <button
                   type="button"
                   className="text-brand underline"
@@ -94,7 +97,7 @@ export default function RunList({ refreshKey = 0 }: { refreshKey?: number }) {
             )}
             {openId === r.id && view === 'results' && (
               <div className="mt-2">
-                <ResultsView runId={r.id} active={r.status === 'running'} />
+                <ResultsView runId={r.id} active={r.status === 'running'} title={r.kind === 'setup' ? undefined : (r.params.title ?? t.tasks[r.params.taskId ?? '']?.title)} />
               </div>
             )}
           </li>

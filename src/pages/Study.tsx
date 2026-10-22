@@ -7,7 +7,7 @@ import { useI18n } from '../i18n'
 import { blank, MAX_QUESTIONS, parseImport, type DraftQuestion, type QType } from '../importers'
 import { useSelection } from '../selection'
 import { useStudyDraft, type SourceType } from '../studyDraft'
-import { TEMPLATES, type TemplateId } from '../studyTemplates'
+import type { TemplateId } from '../studyTemplates'
 import { MODELS } from '../tasks'
 
 type Notice = { kind: 'info' | 'warn' | 'error'; text: string }
@@ -74,7 +74,7 @@ export default function Study({ go }: { go: (p: PageId) => void }) {
   )
 
   const loadTemplate = (id: TemplateId) => {
-    setQuestions(id === 'blank' ? [blank()] : clone(TEMPLATES[id]))
+    setQuestions(id === 'blank' ? [blank()] : clone(t.seed.templates[id]))
     setPristine(id !== 'blank')
   }
   const edit = (fn: (qs: DraftQuestion[]) => DraftQuestion[]) => {
@@ -311,6 +311,7 @@ export default function Study({ go }: { go: (p: PageId) => void }) {
             <input className={`${input} mt-1`} type="number" min={0} value={seed} onChange={(e) => setSeed(Math.max(0, Math.trunc(Number(e.target.value)) || 0))} />
           </label>
         </div>
+        {mode === 'smoke' && <p className="mt-3 rounded-lg bg-amber-400/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">{t.sim.smokeNote}</p>}
         <p className="mt-3 text-xs text-slate-500">{t.study.experimental}</p>
 
         {!loading && !admin ? (

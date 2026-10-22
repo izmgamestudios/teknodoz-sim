@@ -37,8 +37,8 @@ export default function Guide({ go }: { go: (p: PageId) => void }) {
     setDraft({
       src: ex.src,
       title: t.guide.ex[ex.id].title,
-      brief: ex.brief,
-      questions: ex.questions.map((q) => ({ ...q, options: [...q.options] })),
+      brief: t.seed.examples[ex.id].brief,
+      questions: t.seed.examples[ex.id].questions.map((q) => ({ ...q, options: [...q.options] })),
     })
     let msg = t.guide.loaded
     if (ex.audience && pool) {

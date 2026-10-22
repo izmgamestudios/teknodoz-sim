@@ -5,6 +5,7 @@ import { ROOT } from './paths.mjs'
 import { loadCountryPool } from './countries.mjs'
 import { toMatraixPersona, toYaml } from './personagen.mjs'
 import { getStudy, STUDY_ID_RE, syncStudyTask } from './studies.mjs'
+import { captureSmoke, snapshotRealRun } from './results.mjs'
 import { randomUUID } from 'node:crypto'
 
 export { ROOT }
@@ -80,7 +81,8 @@ export function stepsFor(kind, p) {
   }
   const task = `application/tasks/${p.taskId}`
   if (p.mode === 'smoke') {
-    return [{ cmd: 'uv', args: ['run', 'matraix', 'smoke', task], cwd: MATRAIX_DIR }]
+    const n = Math.min(200, Math.max(1, p.sampleSize))
+    return [{ cmd: 'uv', args: ['run', 'matraix', 'smoke', task, '--personas', String(n), '--keep-artifacts'], cwd: MATRAIX_DIR }]
   }
   const name = jobNameFor(p.taskId, p.sampleSize)
   return [
@@ -193,6 +195,10 @@ async function execute(run) {
       }
     }
     if (run.kind === 'setup') syncCustomTasks(run)
+    if (run.kind === 'simulation') {
+      const n = run.params.mode === 'smoke' ? captureSmoke(run) : snapshotRealRun(run)
+      append(run, n ? `\n[kept ${n} result file(s) for the report${run.params.mode === 'smoke' ? ' (synthetic, from the fake client)' : ''}]\n` : '\n[no result files found yet for the report]\n')
+    }
     run.status = 'done'
   } finally {
     run.endedAt = Date.now()

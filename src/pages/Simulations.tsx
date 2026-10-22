@@ -146,6 +146,8 @@ export default function Simulations({ go }: { go: (p: PageId) => void }) {
         </label>
       </div>
 
+      {mode === 'smoke' && <p className="mt-3 rounded-lg bg-amber-400/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">{t.sim.smokeNote}</p>}
+
       {!loading && !admin ? (
         <div className={`${card} mt-4`}>
           <div className="font-medium">{t.sim.loginTitle}</div>

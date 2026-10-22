@@ -5,6 +5,7 @@ import {
   countryName, useCountryPool, usePersonas,
   type CountryPersona, type CountryRec, type Persona,
 } from '../personas'
+import MultiSelect, { type MsOption } from '../components/MultiSelect'
 import { MAX_SELECTION, useSelection, type PersonaPool } from '../selection'
 
 const PAGE = 24
@@ -69,71 +70,6 @@ function shuffle<T>(arr: T[]): T[] {
   return a
 }
 
-function CountryPicker({ countries, value, onChange }: { countries: CountryRec[]; value: string[]; onChange: (v: string[]) => void }) {
-  const { t, lang } = useI18n()
-  const [open, setOpen] = useState(false)
-  const [q, setQ] = useState('')
-  const named = useMemo(
-    () => countries.map((c) => ({ ...c, label: countryName(c.iso2, lang) })).sort((a, b) => a.label.localeCompare(b.label, lang)),
-    [countries, lang],
-  )
-  const regions = useMemo(() => [...new Set(countries.map((c) => c.region))], [countries])
-  const toggle = (iso: string) => onChange(value.includes(iso) ? value.filter((x) => x !== iso) : [...value, iso])
-  const toggleRegion = (region: string) => {
-    const inRegion = countries.filter((c) => c.region === region).map((c) => c.iso2)
-    const all = inRegion.every((i) => value.includes(i))
-    onChange(all ? value.filter((v) => !inRegion.includes(v)) : [...new Set([...value, ...inRegion])])
-  }
-  const ql = q.trim().toLowerCase()
-
-  return (
-    <div className="relative">
-      <button type="button" onClick={() => setOpen((o) => !o)} aria-expanded={open} className={`${field} min-w-40 text-left`}>
-        {t.personas.fCountry}: {value.length ? t.personas.countriesN.replace('{n}', String(value.length)) : t.personas.all}
-      </button>
-      {open && (
-        <>
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute left-0 z-50 mt-1 max-h-96 w-80 overflow-y-auto rounded-xl border border-slate-200 bg-white p-3 shadow-xl dark:border-slate-700 dark:bg-slate-900">
-            <input
-              type="search"
-              autoFocus
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder={t.personas.searchCountry}
-              aria-label={t.personas.searchCountry}
-              className={`${field} mb-2 w-full`}
-            />
-            {value.length > 0 && (
-              <button type="button" onClick={() => onChange([])} className="mb-2 text-xs text-brand underline">
-                {t.personas.clearCountries}
-              </button>
-            )}
-            {regions.map((region) => {
-              const rows = named.filter((c) => c.region === region && (!ql || c.label.toLowerCase().includes(ql) || c.iso2.toLowerCase() === ql))
-              if (!rows.length) return null
-              return (
-                <div key={region} className="mb-2">
-                  <button type="button" onClick={() => toggleRegion(region)} className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500 hover:text-brand">
-                    {t.personas.regions[region as keyof typeof t.personas.regions] ?? region} · {t.personas.regionAll}
-                  </button>
-                  {rows.map((c) => (
-                    <label key={c.iso2} className="flex cursor-pointer items-center gap-2 py-0.5 text-sm">
-                      <input type="checkbox" checked={value.includes(c.iso2)} onChange={() => toggle(c.iso2)} className="accent-indigo-500" />
-                      <span className="flex-1">{c.label}</span>
-                      <span className="text-xs text-slate-500">{c.iso2}</span>
-                    </label>
-                  ))}
-                </div>
-              )
-            })}
-          </div>
-        </>
-      )}
-    </div>
-  )
-}
-
 function Detail({ p, onClose, countries, meta }: { p: UIPersona; onClose: () => void; countries: CountryRec[]; meta: { source: string; asOf: string } | null }) {
   const { t, lang } = useI18n()
   const devData = usePersonas()
@@ -155,7 +91,7 @@ function Detail({ p, onClose, countries, meta }: { p: UIPersona; onClose: () => 
     if (g === 'decision') return ['economic_motivation', 'risk_tolerance'].filter((k) => p.d[k])
     return []
   }
-  const valueOf = (k: string) => (k === 'region' ? t.personas.regions[p.region as keyof typeof t.personas.regions] ?? p.region : p.d[k])
+  const valueOf = (k: string) => (k === 'region' ? t.personas.regions[p.region as keyof typeof t.personas.regions] ?? p.region : t.values[k]?.[p.d[k]] ?? p.d[k])
   const values = p.pool === 'dev' ? (devData?.valueKeys ?? []).filter((k) => p.d[k]) : []
 
   return (
@@ -273,7 +209,7 @@ export default function Personas({ go }: { go: (p: PageId) => void }) {
   const { data: cp, error: cpError } = useCountryPool()
   const { ids, pool: selPool, toggle, addMany, clear } = useSelection()
   const [query, setQuery] = useState('')
-  const [filters, setFilters] = useState<Record<string, string>>({})
+  const [filters, setFilters] = useState<Record<string, string[]>>({})
   const [countries, setCountries] = useState<string[]>([])
   const [internetOnly, setInternetOnly] = useState(true)
   const [shown, setShown] = useState(PAGE)
@@ -303,21 +239,27 @@ export default function Personas({ go }: { go: (p: PageId) => void }) {
       risk: t.personas.filters.risk, sub: t.personas.fSub, employment: t.personas.fEmployment, income: t.personas.fIncome,
     })[l]
 
+  const vl = (facet: string, v: string) => t.values[facet]?.[v] ?? v
+  const optionLabel = (key: string, v: string) =>
+    key === 'region' ? (t.personas.regions[v as keyof typeof t.personas.regions] ?? v) : key === 'sub' ? (t.personas.sub[v as keyof typeof t.personas.sub] ?? v) : vl(key, v)
+
   const options = useMemo(() => {
-    const out: Record<string, string[]> = {}
-    for (const f of facets) out[f.key] = [...new Set(all.map((p) => f.get(p)).filter((v): v is string => Boolean(v)))].sort()
-    if (pool === 'country' && filters.region) {
-      out.sub = [...new Set(all.filter((p) => p.region === filters.region).map((p) => p.sub))].sort()
+    const out: Record<string, MsOption[]> = {}
+    for (const f of facets) {
+      const base = f.key === 'sub' && filters.region?.length ? all.filter((p) => filters.region.includes(p.region)) : all
+      const values = [...new Set(base.map((p) => f.get(p)).filter((v): v is string => Boolean(v)))]
+      out[f.key] = values.map((v) => ({ value: v, label: optionLabel(f.key, v) })).sort((a, b) => a.label.localeCompare(b.label, lang, { numeric: true }))
     }
     return out
-  }, [all, facets, pool, filters.region])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [all, facets, filters.region, lang, t])
 
   const list = useMemo(() => {
     const q = query.trim().toLowerCase()
     return all.filter(
       (p) =>
         (!q || p.name.toLowerCase().includes(q) || p.id.toLowerCase().includes(q) || (p.country ? countryName(p.country, lang).toLowerCase().includes(q) : false)) &&
-        facets.every((f) => !filters[f.key] || f.get(p) === filters[f.key]) &&
+        facets.every((f) => !filters[f.key]?.length || filters[f.key].includes(f.get(p) ?? '')) &&
         (pool !== 'country' || ((countries.length === 0 || countries.includes(p.country ?? '')) && (!internetOnly || p.internet))),
     )
   }, [all, query, filters, facets, pool, countries, internetOnly, lang])
@@ -326,7 +268,7 @@ export default function Personas({ go }: { go: (p: PageId) => void }) {
     setShown(PAGE)
     setNotice('')
   }
-  const hasFilters = query !== '' || Object.values(filters).some(Boolean) || countries.length > 0
+  const hasFilters = query !== '' || Object.values(filters).some((v) => v.length > 0) || countries.length > 0
 
   const applyBulk = (picked: UIPersona[]) => {
     if (!picked.length) return setNotice(t.personas.bulkNone)
@@ -387,29 +329,34 @@ export default function Personas({ go }: { go: (p: PageId) => void }) {
           className={`${field} w-44`}
         />
         {pool === 'country' && cp && (
-          <CountryPicker countries={cp.countries} value={countries} onChange={(v) => { setCountries(v); reset() }} />
+          <MultiSelect
+            label={t.personas.fCountry}
+            allLabel={t.personas.all}
+            countLabel={(n) => t.personas.countriesN.replace('{n}', String(n))}
+            searchPlaceholder={t.personas.searchCountry}
+            clearLabel={t.personas.clearCountries}
+            groupAllLabel={t.personas.regionAll}
+            value={countries}
+            onChange={(v) => { setCountries(v); reset() }}
+            options={cp.countries
+              .map((c) => ({ value: c.iso2, label: countryName(c.iso2, lang), group: t.personas.regions[c.region as keyof typeof t.personas.regions] ?? c.region, hint: c.iso2 }))
+              .sort((a, b) => a.group.localeCompare(b.group, lang) || a.label.localeCompare(b.label, lang))}
+          />
         )}
         {facets.map((f) => (
-          <select
+          <MultiSelect
             key={f.key}
-            aria-label={facetLabel(f.label)}
-            value={filters[f.key] ?? ''}
-            onChange={(e) => {
-              const v = e.target.value
-              setFilters((cur) => ({ ...cur, [f.key]: v, ...(f.key === 'region' ? { sub: '' } : {}) }))
+            label={facetLabel(f.label)}
+            allLabel={t.personas.all}
+            countLabel={(n) => t.personas.selectedCount.replace('{n}', String(n))}
+            clearLabel={t.personas.clearFilter}
+            value={filters[f.key] ?? []}
+            onChange={(v) => {
+              setFilters((cur) => ({ ...cur, [f.key]: v, ...(f.key === 'region' ? { sub: [] } : {}) }))
               reset()
             }}
-            className={field}
-          >
-            <option value="">
-              {facetLabel(f.label)}: {t.personas.all}
-            </option>
-            {(options[f.key] ?? []).map((o) => (
-              <option key={o} value={o}>
-                {f.key === 'region' ? t.personas.regions[o as keyof typeof t.personas.regions] ?? o : f.key === 'sub' ? t.personas.sub[o as keyof typeof t.personas.sub] ?? o : o}
-              </option>
-            ))}
-          </select>
+            options={options[f.key] ?? []}
+          />
         ))}
         {pool === 'country' && (
           <label className="flex items-center gap-1.5 text-sm">
@@ -480,7 +427,7 @@ export default function Personas({ go }: { go: (p: PageId) => void }) {
                   />
                 </div>
                 <div className="mt-2 flex flex-wrap gap-1.5 text-[11px]">
-                  {[p.d.age_bracket, p.pool === 'dev' ? (t.personas.regions[p.region as keyof typeof t.personas.regions] ?? p.region) : p.d.economic_motivation, p.d.life_stage].filter(Boolean).map((v) => (
+                  {[vl('age_bracket', p.d.age_bracket ?? ''), p.pool === 'dev' ? (t.personas.regions[p.region as keyof typeof t.personas.regions] ?? p.region) : vl('economic_motivation', p.d.economic_motivation ?? ''), vl('life_stage', p.d.life_stage ?? '')].filter(Boolean).map((v) => (
                     <span key={v} className="rounded-full bg-slate-100 px-2 py-0.5 dark:bg-slate-800">{v}</span>
                   ))}
                 </div>

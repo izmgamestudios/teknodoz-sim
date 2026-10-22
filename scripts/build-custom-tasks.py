@@ -200,6 +200,7 @@ task(
 
 task(
     id="tk_teklif-studyosu_pricing-sensitivity",
+    analysis={"type": "vw", "tooCheap": "vw_too_cheap", "cheap": "vw_bargain", "expensive": "vw_expensive", "tooExpensive": "vw_too_expensive", "currency": "USD"},
     title="Teklif Studio Pricing Sensitivity",
     intro="We are testing prices for **Teklif Stüdyosu**. The plans below are hypothetical test stimuli. Answer as yourself, using US dollars.",
     tags=["Teklif Stüdyosu", "price sensitivity", "Van Westendorp", "subscription pricing"],
@@ -281,8 +282,18 @@ for i, (a, b) in enumerate(SETS, start=1):
     mvt_questions.append(single(
         f"set_{i}", f"Set {i}: Which landing page would make you more likely to try the product?", f"landing_choice_set_{i}",
         [("a", "Option A"), ("b", "Option B"), ("neither", "Neither")], rationale=True))
+MVT_ANALYSIS = {
+    "type": "mvt",
+    "attributes": [
+        {"key": "headline", "levels": [H[1], H[2]]},
+        {"key": "button", "levels": [C[1], C[2]]},
+        {"key": "pricing", "levels": [P[1], P[2]]},
+    ],
+    "sets": [{"questionId": f"set_{i}", "a": [x - 1 for x in a], "b": [x - 1 for x in b]} for i, (a, b) in enumerate(SETS, start=1)],
+}
 task(
     id="tk_teklif-studyosu_mvt-landing-page",
+    analysis=MVT_ANALYSIS,
     title="Teklif Studio Landing Page Multivariate Test",
     intro="We are comparing landing-page variants for **Teklif Stüdyosu**. You will see four head-to-head comparisons. Pick the page that makes you more likely to try the product.",
     tags=["Teklif Stüdyosu", "multivariate test", "landing page", "choice-based conjoint"],
@@ -690,7 +701,7 @@ def main():
         build(t)
     # question labels for the results view (kept outside the task folders so MatrAIx never sees them)
     with open(os.path.join(ROOT, "shared", "questionnaires.json"), "w", encoding="utf-8") as f:
-        json.dump({t["id"]: {"title": t["title"], "questions": t["questions"]} for t in TASKS}, f, ensure_ascii=False, separators=(",", ":"))
+        json.dump({t["id"]: {"title": t["title"], "questions": t["questions"], **({"analysis": t["analysis"]} if t.get("analysis") else {})} for t in TASKS}, f, ensure_ascii=False, separators=(",", ":"))
     print(f"{len(TASKS)} tasks -> custom-tasks/")
 
 
