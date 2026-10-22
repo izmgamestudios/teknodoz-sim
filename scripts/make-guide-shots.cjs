@@ -44,7 +44,7 @@ async function shot(page, file, opts = {}) {
     await goto('dashboard'); await page.waitForTimeout(500); await shot(page, out('02-dashboard'))
 
     await goto('personas'); await page.waitForTimeout(900)
-    await page.locator('button[aria-expanded]').click()
+    await page.locator('button[aria-expanded]').first().click()
     for (const iso of ['TR', 'DE', 'US']) await page.locator(`label:has(span:text-is("${iso}")) input`).check()
     await page.waitForTimeout(200)
     await shot(page, out('03-personas'))

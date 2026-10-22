@@ -7,7 +7,8 @@ import { loadCountryPool } from './countries.mjs'
 import { toMatraixCustomPersona, toMatraixPersona, toYaml } from './personagen.mjs'
 import { loadCustomPersonas } from './custompersonas.mjs'
 import { getStudy, STUDY_ID_RE, syncStudyTask } from './studies.mjs'
-import { captureSmoke, snapshotRealRun } from './results.mjs'
+import { captureSmoke, isWebTask, snapshotRealRun, snapshotWebRun } from './results.mjs'
+import { getWebTask, MAX_WEB_PERSONAS, syncWebTask, WEB_ID_RE } from './webtasks.mjs'
 import { randomUUID } from 'node:crypto'
 
 export { ROOT }
@@ -187,6 +188,7 @@ async function execute(run) {
     if (run.kind === 'simulation') {
       syncCustomTasks(run)
       if (syncStudyTask(run.params.taskId, join(MATRAIX_DIR, 'application', 'tasks'))) append(run, '[synced study task]\n')
+      if (syncWebTask(run.params.taskId, join(MATRAIX_DIR, 'application', 'tasks'))) append(run, '[synced web task]\n')
       writePoolDataset(run)
     }
     for (const step of stepsFor(run.kind, run.params)) {
@@ -199,7 +201,7 @@ async function execute(run) {
     }
     if (run.kind === 'setup') syncCustomTasks(run)
     if (run.kind === 'simulation') {
-      const n = run.params.mode === 'smoke' ? captureSmoke(run) : snapshotRealRun(run)
+      const n = run.params.mode === 'smoke' ? captureSmoke(run) : isWebTask(run.params.taskId) ? snapshotWebRun(run) : snapshotRealRun(run)
       append(run, n ? `\n[kept ${n} result file(s) for the report${run.params.mode === 'smoke' ? ' (synthetic, from the fake client)' : ''}]\n` : '\n[no result files found yet for the report]\n')
     }
     run.status = 'done'
@@ -231,7 +233,9 @@ export function validate(body) {
       else return { error: 'invalid_personas' }
     }
   }
-  if (!TASK_IDS.has(taskId) && !(STUDY_ID_RE.test(taskId) && getStudy(taskId))) return { error: 'invalid_task' }
+  if (!TASK_IDS.has(taskId) && !(STUDY_ID_RE.test(taskId) && getStudy(taskId)) && !(WEB_ID_RE.test(taskId) && getWebTask(taskId))) return { error: 'invalid_task' }
+  if (isWebTask(taskId) && mode !== 'auto') return { error: 'web_needs_real_run' }
+  if (isWebTask(taskId) && (personaIds.length || sampleSize) > MAX_WEB_PERSONAS) return { error: 'too_many_web_personas' }
   if (!Number.isInteger(sampleSize) || sampleSize < 1 || sampleSize > 100) return { error: 'invalid_sample_size' }
   if (!Number.isInteger(seed) || seed < 0 || seed > 1_000_000_000) return { error: 'invalid_seed' }
   if (!MODELS.has(model) && !loadSettings().seed.models.includes(model)) return { error: 'invalid_model' }
@@ -250,6 +254,7 @@ export function startRun(kind, params) {
   if (kind === 'simulation') {
     params = { ...params, jobName: jobNameFor(params.taskId, params.sampleSize) }
     if (STUDY_ID_RE.test(params.taskId)) params.title = getStudy(params.taskId)?.title
+    if (WEB_ID_RE.test(params.taskId)) params.title = getWebTask(params.taskId)?.title
   }
   const run = {
     id: randomUUID(), kind, params, status: 'queued', createdAt: Date.now(), log: '',

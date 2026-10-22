@@ -4,6 +4,7 @@ import { useAuth } from '../auth'
 import RunList from '../components/RunList'
 import { useI18n } from '../i18n'
 import { reloadCountryPool, useCountryPool } from '../personas'
+import AdminValidation from './AdminValidation'
 import AdminSettings, { type SettingsTab } from './AdminSettings'
 
 const card = 'rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900'
@@ -310,11 +311,11 @@ function Panel() {
   )
 }
 
-const TABS: ('system' | SettingsTab)[] = ['system', 'brand', 'menus', 'pages', 'content', 'data']
+const TABS: ('system' | 'validate' | SettingsTab)[] = ['system', 'brand', 'menus', 'pages', 'content', 'validate', 'data']
 
 function Tabs() {
   const { t } = useI18n()
-  const [tab, setTab] = useState<'system' | SettingsTab>('system')
+  const [tab, setTab] = useState<'system' | 'validate' | SettingsTab>('system')
   return (
     <div>
       <div role="tablist" className="mb-6 flex flex-wrap gap-1 border-b border-slate-200 dark:border-slate-800">
@@ -331,7 +332,7 @@ function Tabs() {
           </button>
         ))}
       </div>
-      {tab === 'system' ? <Panel /> : <AdminSettings tab={tab} />}
+      {tab === 'system' ? <Panel /> : tab === 'validate' ? <AdminValidation /> : <AdminSettings tab={tab} />}
     </div>
   )
 }

@@ -6,7 +6,9 @@ import { loadCountryPool, refreshFromWorldBank, saveCountryEdits } from './count
 import { loadSettings, MAX_SETTINGS_BYTES, resetSettings, saveSettings } from './settings.mjs'
 import { cancelRun, getRun, isBusy, listRuns, startRun, systemStatus, validate, validateRunOptions } from './runner.mjs'
 import { createStudy, listStudies, previewSource, validateStudyInput } from './studies.mjs'
-import { collectResults } from './results.mjs'
+import { collectResults, isWebTask, loadRunData, loadWebItems, questionsFor } from './results.mjs'
+import { checkSurveyResults, checkWebResults, readValidation, REFERENCES, webReferenceValidated, writeValidation } from './validation.mjs'
+import { createWebTask, listWebTasks, MAX_WEB_PERSONAS } from './webtasks.mjs'
 import { buildReport } from './report.mjs'
 import { exportReport, FORMATS } from './export/index.mjs'
 import { LANGS } from './i18n.mjs'
@@ -14,6 +16,25 @@ import { clearCustomPersonas, importPersonaCsv, loadCustomPersonas, MAX_CSV_BYTE
 import { FetchError } from './safefetch.mjs'
 
 const MAX_BODY = 10_000
+
+/** Evaluates the newest finished real run of a reference task and stores the verdict. */
+function evaluateReference(kind) {
+  const taskId = REFERENCES[kind]
+  const run = listRuns().find((r) => r.kind === 'simulation' && r.params.taskId === taskId && r.params.mode === 'auto' && (r.status === 'done' || r.status === 'failed'))
+  if (!run) return { error: 'no_reference_run' }
+  const full = getRun(run.id)
+  let result
+  if (run.status !== 'done') {
+    result = { ok: false, checks: [{ key: 'run_completed', ok: false, level: 'fail', detail: String(full.log).slice(-400) }] }
+  } else if (kind === 'survey') {
+    result = checkSurveyResults(loadRunData(full), questionsFor(taskId), run.params.sampleSize)
+  } else {
+    result = checkWebResults(loadWebItems(full), run.params.sampleSize)
+  }
+  const record = { ...result, kind, runId: run.id, model: run.params.model, at: Date.now() }
+  writeValidation(kind, record)
+  return { record }
+}
 
 function send(res, status, body, headers = {}) {
   res.writeHead(status, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...headers })
@@ -136,6 +157,49 @@ export async function handleApi(req, res, pathname) {
       }
     }
 
+    if (pathname === '/api/validation' && method === 'GET') {
+      return send(res, 200, { state: readValidation(), references: REFERENCES, webTasks: listWebTasks(), maxWebPersonas: MAX_WEB_PERSONAS, webGate: webReferenceValidated() })
+    }
+
+    if (pathname === '/api/validation/start' && method === 'POST') {
+      const body = await readBody(req)
+      if (body.kind !== 'survey' && body.kind !== 'web') return send(res, 400, { error: 'invalid_kind' })
+      const v = validate({ taskId: REFERENCES[body.kind], sampleSize: body.kind === 'survey' ? 2 : 1, seed: 42, model: body.model, mode: 'auto', personaIds: [] })
+      if (v.error) return send(res, 400, { error: v.error })
+      const r = startRun('simulation', v.params)
+      return r.error ? send(res, 409, { error: r.error }) : send(res, 202, { id: r.run.id })
+    }
+
+    if (pathname === '/api/validation/check' && method === 'POST') {
+      const body = await readBody(req)
+      if (body.kind !== 'survey' && body.kind !== 'web') return send(res, 400, { error: 'invalid_kind' })
+      const r = evaluateReference(body.kind)
+      return r.error ? send(res, 404, r) : send(res, 200, r.record)
+    }
+
+    if (pathname === '/api/web-tasks' && method === 'POST') {
+      if (!webReferenceValidated()) return send(res, 409, { error: 'reference_not_validated' })
+      const body = await readBody(req)
+      try {
+        const r = await createWebTask(body)
+        return r.error ? send(res, 422, r) : send(res, 201, r)
+      } catch (e) {
+        if (e instanceof FetchError) return send(res, 400, { error: e.code })
+        if (e.message === 'reference_missing' || e.message === 'reference_format_changed') return send(res, 409, { error: e.message })
+        throw e
+      }
+    }
+
+    const wt = pathname.match(/^\/api\/web-tasks\/(wt_[a-f0-9]{10})\/run$/)
+    if (wt && method === 'POST') {
+      if (!webReferenceValidated()) return send(res, 409, { error: 'reference_not_validated' })
+      const body = await readBody(req)
+      const v = validate({ taskId: wt[1], sampleSize: body.sampleSize, seed: body.seed ?? 42, model: body.model, mode: 'auto', personaIds: [] })
+      if (v.error) return send(res, 400, { error: v.error })
+      const r = startRun('simulation', v.params)
+      return r.error ? send(res, 409, { error: r.error }) : send(res, 202, { id: r.run.id })
+    }
+
     if (pathname === '/api/status' && method === 'GET') return send(res, 200, await systemStatus())
 
     if (pathname === '/api/setup' && method === 'POST') {
@@ -203,6 +267,7 @@ export async function handleApi(req, res, pathname) {
       if (m[2] === '/cancel' && method === 'POST') return send(res, 200, { ok: cancelRun(run.id) })
       if (m[2] === '/results' && method === 'GET') return send(res, 200, collectResults(run))
       if (m[2] === '/report' && method === 'GET') {
+        if (isWebTask(run.params?.taskId)) return send(res, 400, { error: 'report_not_available' })
         const q = new URL(req.url ?? '/', 'http://localhost').searchParams
         const format = q.get('format') ?? 'json'
         const lang = LANGS.includes(q.get('lang') ?? '') ? q.get('lang') : 'en'

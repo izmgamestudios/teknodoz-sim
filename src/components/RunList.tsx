@@ -2,6 +2,9 @@ import { useCallback, useEffect, useState } from 'react'
 import { api, type RunDetail, type RunStatus, type RunSummary } from '../api'
 import { useI18n } from '../i18n'
 import ResultsView from './ResultsView'
+import WebResults from './WebResults'
+
+const isWeb = (id?: string) => id === 'example-web-playwright_quote-choice' || /^wt_[a-f0-9]{10}$/.test(id ?? '')
 
 const badge: Record<RunStatus, string> = {
   queued: 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200',
@@ -97,7 +100,7 @@ export default function RunList({ refreshKey = 0 }: { refreshKey?: number }) {
             )}
             {openId === r.id && view === 'results' && (
               <div className="mt-2">
-                <ResultsView runId={r.id} active={r.status === 'running'} title={r.kind === 'setup' ? undefined : (r.params.title ?? t.tasks[r.params.taskId ?? '']?.title)} />
+                {isWeb(r.params.taskId) ? <WebResults runId={r.id} active={r.status === 'running'} /> : <ResultsView runId={r.id} active={r.status === 'running'} title={r.kind === 'setup' ? undefined : (r.params.title ?? t.tasks[r.params.taskId ?? '']?.title)} />}
               </div>
             )}
           </li>

@@ -3,6 +3,8 @@ import { tmpdir } from 'node:os'
 import { join, relative, resolve } from 'node:path'
 import { ROOT } from './paths.mjs'
 import { getStudy, STUDY_ID_RE } from './studies.mjs'
+import { scanWebResults } from './validation.mjs'
+import { REFERENCE_TASK, WEB_ID_RE } from './webtasks.mjs'
 
 const MATRAIX_DIR = join(ROOT, 'vendor', 'MatrAIx')
 const RESULTS_DIR = join(ROOT, 'data', 'run-results')
@@ -186,8 +188,43 @@ export function aggregate(answerSets, questions) {
 
 const listTree = (dir) => (existsSync(dir) ? walk(dir).slice(0, 40).map((f) => ({ path: relative(dir, f.path), size: f.size })) : [])
 
+export const isWebTask = (taskId) => taskId === REFERENCE_TASK || WEB_ID_RE.test(String(taskId))
+
+/** Keep the web task output files of a finished real run (the jobs directory may be cleaned later). */
+export function snapshotWebRun(run) {
+  const jobName = run.params?.jobName
+  if (!jobName || !/^[a-z0-9-]+$/.test(jobName)) return 0
+  const items = scanWebResults(join(MATRAIX_DIR, 'jobs', jobName))
+  if (!items.length) return 0
+  const dir = join(RESULTS_DIR, run.id)
+  mkdirSync(dir, { recursive: true })
+  writeFileSync(join(dir, 'web.json'), JSON.stringify({ items, capturedAt: Date.now() }))
+  return items.length
+}
+
+export function loadWebItems(run) {
+  const file = join(RESULTS_DIR, run.id, 'web.json')
+  if (existsSync(file)) {
+    try {
+      return JSON.parse(readFileSync(file, 'utf8')).items
+    } catch {
+      /* fall through to a fresh scan */
+    }
+  }
+  const jobName = run.params?.jobName
+  return jobName && /^[a-z0-9-]+$/.test(jobName) ? scanWebResults(join(MATRAIX_DIR, 'jobs', jobName)) : []
+}
+
 export function collectResults(run) {
   if (run.kind !== 'simulation') return { n: 0, questions: [], found: false }
+  if (isWebTask(run.params?.taskId)) {
+    const items = loadWebItems(run)
+    const jobName = run.params?.jobName
+    return {
+      n: items.length, found: items.length > 0, synthetic: false, source: 'jobs', questions: [], web: { items },
+      diagnostics: items.length === 0 && jobName ? { jobDirExists: existsSync(join(MATRAIX_DIR, 'jobs', jobName)), files: listTree(join(MATRAIX_DIR, 'jobs', jobName)) } : null,
+    }
+  }
   const data = loadRunData(run)
   const answerSets = data.sets.map((s) => s.payload.answers)
   const jobName = run.params?.jobName
