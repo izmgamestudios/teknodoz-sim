@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { PageId } from '../config'
 import { useI18n } from '../i18n'
+import { useAuth } from '../auth'
 import {
-  countryName, useCountryPool, usePersonas,
+  countryName, useCountryPool, useCustomPersonas, usePersonas,
   type CountryPersona, type CountryRec, type Persona,
 } from '../personas'
 import MultiSelect, { type MsOption } from '../components/MultiSelect'
@@ -24,6 +25,7 @@ type UIPersona = {
   country?: string
   internet?: boolean
   lang?: string | null
+  desc?: string
   d: Record<string, string>
 }
 
@@ -106,7 +108,7 @@ function Detail({ p, onClose, countries, meta }: { p: UIPersona; onClose: () => 
         <div className="flex items-start gap-3">
           <Avatar p={p} />
           <div className="min-w-0 flex-1">
-            <h2 className="text-lg font-bold">{p.country ? `${countryName(p.country, lang)} · ${p.id}` : p.name}</h2>
+            <h2 className="text-lg font-bold">{p.pool === 'custom' ? p.name : p.country ? `${countryName(p.country, lang)} · ${p.id}` : p.name}</h2>
             <p className="text-xs text-slate-500">
               #{p.id} · {t.personas.source}: {p.source}
               {p.pool === 'country' && <span className="ml-2 rounded-full bg-amber-400/15 px-2 py-0.5 text-amber-700 dark:text-amber-300">{t.personas.syntheticBadge}</span>}
@@ -119,7 +121,7 @@ function Detail({ p, onClose, countries, meta }: { p: UIPersona; onClose: () => 
 
         {groups.map((g) => {
           const keys = keysFor(g)
-          if (p.pool === 'country' && g === 'style') return null
+          if (p.pool !== 'dev' && g === 'style') return null
           return (
             <div key={g} className="mt-5">
               <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">{t.personas.groups[g]}</h3>
@@ -139,7 +141,14 @@ function Detail({ p, onClose, countries, meta }: { p: UIPersona; onClose: () => 
           )
         })}
 
-        {p.pool === 'country' && country && (
+        {p.pool !== 'dev' && p.desc && (
+          <div className="mt-5 text-sm">
+            <h3 className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">{t.personas.descriptionLabel}</h3>
+            <p className="whitespace-pre-line text-slate-700 dark:text-slate-300">{p.desc}</p>
+          </div>
+        )}
+
+        {p.pool !== 'dev' && country && (
           <div className="mt-5 text-sm">
             <dl className="grid gap-x-4 gap-y-1.5 sm:grid-cols-2">
               <div className="flex justify-between gap-2 border-b border-slate-100 py-1 dark:border-slate-800">
@@ -207,6 +216,8 @@ export default function Personas({ go }: { go: (p: PageId) => void }) {
   const [pool, setPool] = useState<PersonaPool>('country')
   const dev = usePersonas()
   const { data: cp, error: cpError } = useCountryPool()
+  const { admin } = useAuth()
+  const custom = useCustomPersonas(admin)
   const { ids, pool: selPool, toggle, addMany, clear } = useSelection()
   const [query, setQuery] = useState('')
   const [filters, setFilters] = useState<Record<string, string[]>>({})
@@ -223,6 +234,15 @@ export default function Personas({ go }: { go: (p: PageId) => void }) {
     if (pool === 'dev') {
       return (dev?.personas ?? []).map((p: Persona) => ({ id: p.id, name: p.name, pool: 'dev', source: p.source, region: p.d.region ?? '', sub: '', d: p.d }))
     }
+    if (pool === 'custom') {
+      return custom.map((p) => {
+        const c = p.c ? countryByIso.get(p.c) : undefined
+        return {
+          id: p.id, name: p.n || p.id, pool: 'custom', source: 'teknodoz-import', region: p.d.region ?? c?.region ?? '', sub: c?.sub ?? '',
+          country: p.c ?? undefined, internet: p.i === 1, lang: p.l, desc: p.x, d: p.d,
+        } as UIPersona
+      })
+    }
     return (cp?.personas ?? []).map((p: CountryPersona) => {
       const c = countryByIso.get(p.c)
       return {
@@ -230,7 +250,7 @@ export default function Personas({ go }: { go: (p: PageId) => void }) {
         country: p.c, internet: p.i === 1, lang: p.l, d: p.d,
       } as UIPersona
     })
-  }, [pool, dev, cp, countryByIso])
+  }, [pool, dev, cp, countryByIso, custom])
 
   const facets = pool === 'dev' ? FACETS_DEV : FACETS_COUNTRY
   const facetLabel = (l: Facet['label']) =>
@@ -260,7 +280,7 @@ export default function Personas({ go }: { go: (p: PageId) => void }) {
       (p) =>
         (!q || p.name.toLowerCase().includes(q) || p.id.toLowerCase().includes(q) || (p.country ? countryName(p.country, lang).toLowerCase().includes(q) : false)) &&
         facets.every((f) => !filters[f.key]?.length || filters[f.key].includes(f.get(p) ?? '')) &&
-        (pool !== 'country' || ((countries.length === 0 || countries.includes(p.country ?? '')) && (!internetOnly || p.internet))),
+        (pool === 'dev' || ((countries.length === 0 || countries.includes(p.country ?? '')) && (pool !== 'country' || !internetOnly || p.internet))),
     )
   }, [all, query, filters, facets, pool, countries, internetOnly, lang])
 
@@ -298,7 +318,7 @@ export default function Personas({ go }: { go: (p: PageId) => void }) {
       </p>
 
       <div className="mt-5 flex flex-wrap gap-2" role="tablist">
-        {([['country', t.personas.pCountry.replace('{n}', String(nCountry || '…'))], ['dev', t.personas.pDev.replace('{n}', String(dev?.personas.length ?? '…'))]] as [PersonaPool, string][]).map(([k, label]) => (
+        {([['country', t.personas.pCountry.replace('{n}', String(nCountry || '…'))], ['dev', t.personas.pDev.replace('{n}', String(dev?.personas.length ?? '…'))], ...(admin ? [['custom', t.personas.pCustom.replace('{n}', String(custom.length))]] : [])] as [PersonaPool, string][]).map(([k, label]) => (
           <button
             key={k}
             type="button"
@@ -311,7 +331,7 @@ export default function Personas({ go }: { go: (p: PageId) => void }) {
           </button>
         ))}
       </div>
-      <p className="mt-2 text-xs text-slate-500">{pool === 'dev' ? t.personas.poolDevNote : t.personas.poolCountryNote}</p>
+      <p className="mt-2 text-xs text-slate-500">{pool === 'dev' ? t.personas.poolDevNote : pool === 'custom' ? t.personas.customNote : t.personas.poolCountryNote}</p>
       {pool === 'country' && cp && (
         <p className="mt-1 text-xs text-slate-500">
           {t.personas.dataTitle}: {cp.meta.source === 'world-bank' ? t.personas.dataWorldBank : t.personas.dataBaseline} · {t.personas.dataAsOf}: {cp.meta.asOf}
@@ -328,7 +348,7 @@ export default function Personas({ go }: { go: (p: PageId) => void }) {
           aria-label={t.personas.search}
           className={`${field} w-44`}
         />
-        {pool === 'country' && cp && (
+        {pool !== 'dev' && cp && (
           <MultiSelect
             label={t.personas.fCountry}
             allLabel={t.personas.all}
@@ -391,7 +411,7 @@ export default function Personas({ go }: { go: (p: PageId) => void }) {
           <button type="button" onClick={bulkRandom} disabled={!list.length} className={`${btn} disabled:opacity-50`}>
             {t.personas.bulkRandom}
           </button>
-          {pool === 'country' && (
+          {pool !== 'dev' && (
             <button type="button" onClick={bulkPerCountry} disabled={!list.length} className={`${btn} disabled:opacity-50`}>
               {t.personas.bulkPerCountry}
             </button>
@@ -415,8 +435,8 @@ export default function Personas({ go }: { go: (p: PageId) => void }) {
                 <div className="flex items-center gap-3">
                   <Avatar p={p} />
                   <button type="button" onClick={() => setOpen(p)} className="min-w-0 flex-1 text-left">
-                    <div className="truncate text-sm font-semibold">{p.country ? countryName(p.country, lang) : p.name}</div>
-                    <div className="text-xs text-slate-500">#{p.id}{p.pool === 'dev' ? ` · ${p.source}` : ''}</div>
+                    <div className="truncate text-sm font-semibold">{p.pool === 'custom' ? p.name : p.country ? countryName(p.country, lang) : p.name}</div>
+                    <div className="text-xs text-slate-500">#{p.id}{p.pool === 'dev' ? ` · ${p.source}` : p.pool === 'custom' && p.country ? ` · ${countryName(p.country, lang)}` : ''}</div>
                   </button>
                   <input
                     type="checkbox"

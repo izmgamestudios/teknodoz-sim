@@ -79,3 +79,21 @@ export function countryName(iso2: string, lang: string): string {
     return iso2
   }
 }
+
+// ---- imported (CSV) personas, admin only ----
+export type CustomPersona = { id: string; c: string | null; i: 0 | 1; l: string | null; d: Record<string, string>; n?: string; x?: string }
+
+export function useCustomPersonas(enabled: boolean, version = 0): CustomPersona[] {
+  const [list, setList] = useState<CustomPersona[]>([])
+  useEffect(() => {
+    if (!enabled) return setList([])
+    let alive = true
+    api<{ personas: CustomPersona[] }>('/api/custom-personas')
+      .then((r) => alive && setList(r.personas))
+      .catch(() => alive && setList([]))
+    return () => {
+      alive = false
+    }
+  }, [enabled, version])
+  return list
+}

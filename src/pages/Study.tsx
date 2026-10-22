@@ -290,7 +290,7 @@ export default function Study({ go }: { go: (p: PageId) => void }) {
           <div className="rounded-lg border border-dashed border-slate-300 p-3 text-sm dark:border-slate-700 sm:col-span-2">
             {selection.ids.length > 0 ? (
               <>
-                {t.study.audSel.replace('{n}', String(selection.ids.length)).replace('{pool}', selection.pool === 'country' ? t.study.audCountry : t.study.audDev)}{' '}
+                {t.study.audSel.replace('{n}', String(selection.ids.length)).replace('{pool}', selection.pool === 'country' ? t.study.audCountry : selection.pool === 'custom' ? t.study.audCustom : t.study.audDev)}{' '}
                 <button type="button" className="text-brand underline" onClick={selection.clear}>{t.sim.clearSelection}</button>
               </>
             ) : (

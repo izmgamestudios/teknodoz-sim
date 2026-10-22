@@ -235,3 +235,28 @@ export function toYaml(obj, indent = 0) {
   }
   return lines.join('\n')
 }
+
+/** MatrAIx persona for an imported (CSV) persona. `c` is the country record when a country code was given. */
+export function toMatraixCustomPersona(p, c, meta = {}) {
+  const dimensions = { ...p.d }
+  if (c && !dimensions.region) dimensions.region = c.region
+  if (p.l) {
+    if (PRIMARY_LANGUAGE_ENUM.has(p.l)) dimensions.primary_language = p.l[0].toUpperCase() + p.l.slice(1)
+    dimensions[`lang_${p.l}`] = 'Native'
+  }
+  const parts = []
+  if (c) parts.push(`You live in ${countryName(c.iso2, 'en')} (local currency: ${c.cur}).`)
+  if (p.l) parts.push(`Your native language is ${LANG_NAMES[p.l] ?? p.l}.`)
+  if (p.x) parts.push(`About you: ${p.x}`)
+  parts.push(c ? `Answer as an ordinary resident of ${countryName(c.iso2, 'en')} would, judging prices and situations against local conditions.` : 'Answer as this person would, in their own voice.')
+  if (!p.i) parts.push('You rarely use the internet or smartphone apps.')
+  return {
+    persona_id: p.id,
+    version: '1.0',
+    source: 'teknodoz-import',
+    display_name: p.n || p.id,
+    system_prompt: parts.join(' '),
+    dimensions,
+    provenance: { generator: 'teknodoz-csv-import', country: c?.iso2 ?? '', data_source: meta.source ?? 'import', synthetic: false },
+  }
+}

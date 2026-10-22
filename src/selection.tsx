@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react'
 
-export type PersonaPool = 'dev' | 'country'
+export type PersonaPool = 'dev' | 'country' | 'custom'
 
 type Selection = {
   ids: string[]

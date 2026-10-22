@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { loadCountryPool } from './countries.mjs'
 import { loadDict } from './i18n.mjs'
+import { loadCustomPersonas } from './custompersonas.mjs'
 import { loadRunData, questionnaireMeta, questionsFor } from './results.mjs'
 import { ROOT } from './paths.mjs'
 
@@ -29,6 +30,10 @@ function devPersonas() {
 }
 
 function personaInfo(pool) {
+  if (pool === 'custom') {
+    const byC = new Map(loadCountryPool().countries.map((c) => [c.iso2, c]))
+    return new Map(loadCustomPersonas().map((p) => [p.id, { d: p.d, country: p.c ?? undefined, region: p.d.region ?? byC.get(p.c)?.region }]))
+  }
   if (pool === 'country') {
     const { countries, personas } = loadCountryPool()
     const byC = new Map(countries.map((c) => [c.iso2, c]))
@@ -223,7 +228,7 @@ export async function buildReport(run, { lang = 'en', title } = {}) {
   const data = loadRunData(run)
   const params = run.params ?? {}
   const meta = questionnaireMeta(params.taskId)
-  const info = personaInfo(params.pool === 'country' ? 'country' : 'dev')
+  const info = personaInfo(params.pool === 'country' || params.pool === 'custom' ? params.pool : 'dev')
 
   let questions = questionsFor(params.taskId)
   if (!questions) {
@@ -313,7 +318,7 @@ export async function buildReport(run, { lang = 'en', title } = {}) {
   if (analyses.some((a) => a.type === 'vw')) method.push(rs.methodVw)
 
   const labelsMode = params.mode === 'smoke' ? rs.labels.modeSmoke : rs.labels.modeReal
-  const poolLabel = params.pool === 'country' ? rs.labels.poolCountry : rs.labels.poolDev
+  const poolLabel = params.pool === 'country' ? rs.labels.poolCountry : params.pool === 'custom' ? rs.labels.poolCustom : rs.labels.poolDev
   return {
     lang,
     title: title || meta.title || params.title || params.taskId || rs.title,

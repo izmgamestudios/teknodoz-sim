@@ -9,6 +9,7 @@ import { collectResults } from './results.mjs'
 import { buildReport } from './report.mjs'
 import { exportReport, FORMATS } from './export/index.mjs'
 import { LANGS } from './i18n.mjs'
+import { clearCustomPersonas, importPersonaCsv, loadCustomPersonas, MAX_CSV_BYTES, parsePersonaCsv } from './custompersonas.mjs'
 import { FetchError } from './safefetch.mjs'
 
 const MAX_BODY = 10_000
@@ -29,13 +30,13 @@ function sendCompressed(req, res, body) {
   res.end(gzip ? gzipSync(raw) : raw)
 }
 
-function readBody(req) {
+function readBody(req, max = MAX_BODY) {
   return new Promise((resolve, reject) => {
     let size = 0
     const chunks = []
     req.on('data', (c) => {
       size += c.length
-      if (size > MAX_BODY) {
+      if (size > max) {
         reject(new Error('too_large'))
         req.destroy()
       } else chunks.push(c)
@@ -121,6 +122,26 @@ export async function handleApi(req, res, pathname) {
     if (pathname === '/api/setup' && method === 'POST') {
       const r = startRun('setup', {})
       return r.error ? send(res, 409, { error: r.error }) : send(res, 202, { id: r.run.id })
+    }
+
+    if (pathname === '/api/custom-personas' && method === 'GET') return send(res, 200, { personas: loadCustomPersonas() })
+
+    if (pathname === '/api/custom-personas/validate' && method === 'POST') {
+      const body = await readBody(req, MAX_CSV_BYTES + 2000)
+      const r = await parsePersonaCsv(String(body.csv ?? ''), { existing: body.mode === 'replace' ? [] : loadCustomPersonas() })
+      return send(res, 200, { valid: r.personas.length, errors: r.errors.slice(0, 50), warnings: r.warnings.slice(0, 20), preview: r.personas.slice(0, 5) })
+    }
+
+    if (pathname === '/api/custom-personas' && method === 'POST') {
+      const body = await readBody(req, MAX_CSV_BYTES + 2000)
+      const r = await importPersonaCsv(String(body.csv ?? ''), body.mode === 'replace' ? 'replace' : 'append')
+      if (r.errors.length) return send(res, 400, { error: 'invalid_csv', errors: r.errors.slice(0, 50), warnings: r.warnings.slice(0, 20) })
+      return send(res, 200, { saved: r.saved, total: r.total, warnings: r.warnings.slice(0, 20) })
+    }
+
+    if (pathname === '/api/custom-personas/clear' && method === 'POST') {
+      clearCustomPersonas()
+      return send(res, 200, { ok: true })
     }
 
     if (pathname === '/api/studies' && method === 'GET') return send(res, 200, { studies: listStudies() })

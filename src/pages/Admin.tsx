@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
 import { ApiError, api, type SystemStatus } from '../api'
 import { useAuth } from '../auth'
 import RunList from '../components/RunList'
@@ -57,6 +57,130 @@ function Row({ label, ok }: { label: string; ok: boolean }) {
       <span>{label}</span>
       <span className={ok ? 'text-emerald-500' : 'text-red-500'}>{ok ? `✓ ${t.admin.ok}` : `✕ ${t.admin.missing}`}</span>
     </li>
+  )
+}
+
+type ImportIssue = { row: number; field: string; message: string; value?: string }
+
+const TEMPLATE_CSV = [
+  'id,name,country,age_bracket,gender_identity,life_stage,economic_motivation,risk_tolerance,demo_employment_status,socioeconomic_band,urbanicity,language,description,internet',
+  'anna,Anna,DE,25-34,Woman,Early career,Value-driven,Cautious,Full-time,Middle,Dense urban,German,"Product designer at a startup",yes',
+  'mert,Mert,TR,35-44,Man,Parent of young kids,Cost-sensitive,Risk-averse,Self-employed,Lower-middle,Suburban,Turkish,"Runs a small online shop",yes',
+].join('\r\n')
+
+function ImportPersonas() {
+  const { t } = useI18n()
+  const [csv, setCsv] = useState('')
+  const [mode, setMode] = useState<'append' | 'replace'>('append')
+  const [count, setCount] = useState<number | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [errors, setErrors] = useState<ImportIssue[]>([])
+  const [warnings, setWarnings] = useState<ImportIssue[]>([])
+  const [msg, setMsg] = useState('')
+  const fileRef = useRef<HTMLInputElement>(null)
+
+  const refreshCount = useCallback(() => {
+    api<{ personas: unknown[] }>('/api/custom-personas').then((r) => setCount(r.personas.length)).catch(() => setCount(null))
+  }, [])
+  useEffect(refreshCount, [refreshCount])
+
+  const issueText = (i: ImportIssue) => `${t.admin.ipErrors[i.message] ?? i.message}${i.value ? `: ${i.value}` : ''}`
+
+  const run = async (save: boolean) => {
+    setBusy(true)
+    setErrors([])
+    setWarnings([])
+    setMsg('')
+    try {
+      if (save) {
+        const r = await api<{ saved: number; total: number; warnings: ImportIssue[] }>('/api/custom-personas', { method: 'POST', body: { csv, mode } })
+        setMsg(t.admin.ipSaved.replace('{n}', String(r.saved)).replace('{t}', String(r.total)))
+        setWarnings(r.warnings)
+        setCsv('')
+        refreshCount()
+      } else {
+        const r = await api<{ valid: number; errors: ImportIssue[]; warnings: ImportIssue[] }>('/api/custom-personas/validate', { method: 'POST', body: { csv, mode } })
+        setErrors(r.errors)
+        setWarnings(r.warnings)
+        if (!r.errors.length) setMsg(t.admin.ipValid.replace('{n}', String(r.valid)))
+      }
+    } catch (e) {
+      const payload = e as { code?: string }
+      setErrors([{ row: 0, field: '', message: payload.code ?? 'invalid_csv' }])
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const clearAll = async () => {
+    if (!window.confirm(t.admin.ipConfirmClear)) return
+    await api('/api/custom-personas/clear', { method: 'POST', body: {} })
+    refreshCount()
+    setMsg('')
+  }
+
+  const download = () => {
+    const url = URL.createObjectURL(new Blob(['\uFEFF' + TEMPLATE_CSV], { type: 'text/csv;charset=utf-8' }))
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'personas-template.csv'
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
+  return (
+    <div className={card}>
+      <h2 className="font-semibold">{t.admin.ipTitle}</h2>
+      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{t.admin.ipText}</p>
+      <p className="mt-2 text-xs text-slate-500">{count === null ? '…' : t.admin.ipCount.replace('{n}', String(count))}</p>
+      <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+        <button type="button" onClick={download} className="rounded-lg border border-slate-300 px-3 py-1.5 dark:border-slate-700">{t.admin.ipTemplate}</button>
+        <input
+          ref={fileRef}
+          type="file"
+          accept=".csv,text/csv"
+          className="hidden"
+          onChange={async (e) => {
+            const f = e.target.files?.[0]
+            if (f) setCsv(await f.text())
+            e.target.value = ''
+          }}
+        />
+        <button type="button" onClick={() => fileRef.current?.click()} className="rounded-lg border border-slate-300 px-3 py-1.5 dark:border-slate-700">{t.admin.ipFile}</button>
+        {count !== null && count > 0 && (
+          <button type="button" onClick={clearAll} className="ml-auto text-xs text-red-500 underline">{t.admin.ipClear}</button>
+        )}
+      </div>
+      <textarea
+        value={csv}
+        onChange={(e) => setCsv(e.target.value)}
+        aria-label={t.admin.ipPaste}
+        placeholder={t.admin.ipPaste}
+        rows={6}
+        className="mt-3 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 font-mono text-xs dark:border-slate-700 dark:bg-slate-950"
+      />
+      <div className="mt-2 flex flex-wrap items-center gap-4 text-sm">
+        <label className="flex items-center gap-1.5"><input type="radio" name="ipmode" checked={mode === 'append'} onChange={() => setMode('append')} className="accent-indigo-500" />{t.admin.ipAppend}</label>
+        <label className="flex items-center gap-1.5"><input type="radio" name="ipmode" checked={mode === 'replace'} onChange={() => setMode('replace')} className="accent-indigo-500" />{t.admin.ipReplace}</label>
+      </div>
+      <div className="mt-3 flex gap-2">
+        <button type="button" disabled={busy || !csv.trim()} onClick={() => run(false)} className="rounded-lg border border-slate-300 px-4 py-2 text-sm disabled:opacity-50 dark:border-slate-700">{t.admin.ipValidate}</button>
+        <button type="button" disabled={busy || !csv.trim()} onClick={() => run(true)} className="rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white disabled:opacity-50">{t.admin.ipImport}</button>
+      </div>
+      {msg && <p role="status" className="mt-2 text-sm text-emerald-500">{msg}</p>}
+      {errors.length > 0 && (
+        <div role="alert" className="mt-3">
+          <div className="mb-1 text-sm font-medium text-red-500">{t.admin.ipErrorsTitle}</div>
+          <table className="w-full text-left text-xs">
+            <thead><tr className="text-slate-500"><th className="pr-3">{t.admin.ipRow}</th><th className="pr-3">{t.admin.ipField}</th><th>{t.admin.ipMessage}</th></tr></thead>
+            <tbody>{errors.map((e, i) => <tr key={i}><td className="pr-3">{e.row || '—'}</td><td className="pr-3">{e.field || '—'}</td><td>{issueText(e)}</td></tr>)}</tbody>
+          </table>
+        </div>
+      )}
+      {warnings.length > 0 && (
+        <p className="mt-2 text-xs text-amber-600 dark:text-amber-300">{t.admin.ipWarnings}: {warnings.map((w) => `${w.field} (${t.admin.ipErrors[w.message] ?? w.message})`).join(', ')}</p>
+      )}
+    </div>
   )
 }
 
@@ -172,6 +296,8 @@ function Panel() {
         </button>
         {error && <p role="alert" className="mt-2 text-sm text-red-500">{error}</p>}
       </div>
+
+      <ImportPersonas />
 
       <CountryData />
 

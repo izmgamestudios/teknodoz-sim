@@ -11,6 +11,7 @@ step "SSRF-safe fetch";      node scripts/test-safefetch.mjs
 step "studies";              node scripts/test-studies.mjs
 step "question importers";   node --experimental-strip-types scripts/test-importers.mjs 2>&1 | grep -v -i "warning"
 step "results";              node scripts/test-results.mjs
+step "custom personas";     node scripts/test-custompersonas.mjs
 step "report";               node scripts/test-report.mjs 2>&1 | grep -v -i "warning"
 step "survey task format";   python3 -I scripts/validate-survey-task.py custom-tasks/*/
 

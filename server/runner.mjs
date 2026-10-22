@@ -3,7 +3,8 @@ import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, write
 import { join } from 'node:path'
 import { ROOT } from './paths.mjs'
 import { loadCountryPool } from './countries.mjs'
-import { toMatraixPersona, toYaml } from './personagen.mjs'
+import { toMatraixCustomPersona, toMatraixPersona, toYaml } from './personagen.mjs'
+import { loadCustomPersonas } from './custompersonas.mjs'
 import { getStudy, STUDY_ID_RE, syncStudyTask } from './studies.mjs'
 import { captureSmoke, snapshotRealRun } from './results.mjs'
 import { randomUUID } from 'node:crypto'
@@ -25,7 +26,7 @@ const DEV_PERSONA_IDS = new Set(
   JSON.parse(readFileSync(join(ROOT, 'shared', 'personas.json'), 'utf8')).personas.map((x) => x.id),
 )
 
-const COUNTRY_DATASET = 'persona/datasets/teknodoz-country'
+const datasetRel = (pool) => `persona/datasets/teknodoz-${pool}`
 const SECRET_ENV = ['ADMIN_PASSWORD_HASH', 'SESSION_SECRET']
 
 function childEnv() {
@@ -93,7 +94,7 @@ export function stepsFor(kind, p) {
         '--task', task, '--execution-mode', 'auto',
         ...(p.personaIds.length ? [] : ['--sample-size', String(p.sampleSize)]),
         '--seed', String(p.seed), '--model-name', p.model, '--name', name,
-        ...(p.pool === 'country' && p.personaIds.length ? ['--dataset', COUNTRY_DATASET] : []),
+        ...(p.pool !== 'dev' && p.personaIds.length ? ['--dataset', datasetRel(p.pool)] : []),
         ...(p.personaIds.length ? ['--persona-ids', ...p.personaIds] : []),
       ],
       cwd: MATRAIX_DIR,
@@ -144,24 +145,25 @@ function killGroup(pid) {
   }
 }
 
-export function writeCountryDataset(run) {
+export function writePoolDataset(run) {
   const { personaIds = [], pool, mode } = run.params
-  if (pool !== 'country' || mode !== 'auto' || !personaIds.length || !existsSync(MATRAIX_DIR)) return
-  const dir = join(MATRAIX_DIR, 'persona', 'datasets', 'teknodoz-country')
+  if ((pool !== 'country' && pool !== 'custom') || mode !== 'auto' || !personaIds.length || !existsSync(MATRAIX_DIR)) return
+  const rel = datasetRel(pool)
+  const dir = join(MATRAIX_DIR, rel)
   rmSync(dir, { recursive: true, force: true })
   mkdirSync(dir, { recursive: true })
   const { meta, countries, personas } = loadCountryPool()
   const byCountry = Object.fromEntries(countries.map((c) => [c.iso2, c]))
-  const byId = new Map(personas.map((x) => [x.id, x]))
+  const source = pool === 'country' ? new Map(personas.map((x) => [x.id, x])) : new Map(loadCustomPersonas().map((x) => [x.id, x]))
   const entries = []
   for (const id of personaIds) {
-    const p = byId.get(id)
-    const obj = toMatraixPersona(p, byCountry[p.c], { source: meta.source, asOf: meta.asOf })
+    const p = source.get(id)
+    const obj = pool === 'country' ? toMatraixPersona(p, byCountry[p.c], { source: meta.source, asOf: meta.asOf }) : toMatraixCustomPersona(p, p.c ? byCountry[p.c] : null)
     writeFileSync(join(dir, `persona_${id}.yaml`), toYaml(obj) + '\n')
-    entries.push({ persona_id: id, path: `${COUNTRY_DATASET}/persona_${id}.yaml`, source: 'teknodoz-synthetic', display_name: id, dimensions: obj.dimensions })
+    entries.push({ persona_id: id, path: `${rel}/persona_${id}.yaml`, source: obj.source, display_name: obj.display_name, dimensions: obj.dimensions })
   }
-  writeFileSync(join(dir, 'manifest.json'), JSON.stringify({ kind: 'teknodoz-country-sample', count: entries.length, schema_version: '1.0', personas: entries }))
-  append(run, `[wrote ${entries.length} country personas to ${COUNTRY_DATASET}]\n`)
+  writeFileSync(join(dir, 'manifest.json'), JSON.stringify({ kind: `teknodoz-${pool}-sample`, count: entries.length, schema_version: '1.0', personas: entries }))
+  append(run, `[wrote ${entries.length} ${pool} personas to ${rel}]\n`)
 }
 
 export function syncCustomTasks(run) {
@@ -184,7 +186,7 @@ async function execute(run) {
     if (run.kind === 'simulation') {
       syncCustomTasks(run)
       if (syncStudyTask(run.params.taskId, join(MATRAIX_DIR, 'application', 'tasks'))) append(run, '[synced study task]\n')
-      writeCountryDataset(run)
+      writePoolDataset(run)
     }
     for (const step of stepsFor(run.kind, run.params)) {
       const code = await runStep(run, step)
@@ -222,8 +224,10 @@ export function validate(body) {
     if (personaIds.every((id) => DEV_PERSONA_IDS.has(id))) pool = 'dev'
     else {
       const countryIds = new Set(loadCountryPool().personas.map((x) => x.id))
-      if (!personaIds.every((id) => countryIds.has(id))) return { error: 'invalid_personas' }
-      pool = 'country'
+      const customIds = new Set(loadCustomPersonas().map((x) => x.id))
+      if (personaIds.every((id) => countryIds.has(id))) pool = 'country'
+      else if (personaIds.every((id) => customIds.has(id))) pool = 'custom'
+      else return { error: 'invalid_personas' }
     }
   }
   if (!TASK_IDS.has(taskId) && !(STUDY_ID_RE.test(taskId) && getStudy(taskId))) return { error: 'invalid_task' }
