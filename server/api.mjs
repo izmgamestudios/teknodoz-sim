@@ -1,6 +1,8 @@
 import {
   SESSION_MAX_AGE_S, clearFailures, createSession, isLockedOut, readSession, recordFailure, verifyPassword,
 } from './auth.mjs'
+import { gzipSync } from 'node:zlib'
+import { loadCountryPool, refreshFromWorldBank } from './countries.mjs'
 import { cancelRun, getRun, listRuns, startRun, systemStatus, validate } from './runner.mjs'
 
 const MAX_BODY = 10_000
@@ -8,6 +10,17 @@ const MAX_BODY = 10_000
 function send(res, status, body, headers = {}) {
   res.writeHead(status, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...headers })
   res.end(JSON.stringify(body))
+}
+
+function sendCompressed(req, res, body) {
+  const raw = Buffer.from(JSON.stringify(body))
+  const gzip = String(req.headers['accept-encoding'] || '').includes('gzip') && raw.length > 10_000
+  res.writeHead(200, {
+    'Content-Type': 'application/json',
+    'Cache-Control': 'no-cache',
+    ...(gzip ? { 'Content-Encoding': 'gzip', Vary: 'Accept-Encoding' } : {}),
+  })
+  res.end(gzip ? gzipSync(raw) : raw)
 }
 
 function readBody(req) {
@@ -64,6 +77,8 @@ export async function handleApi(req, res, pathname) {
       return send(res, 200, { admin: Boolean(admin), email: admin ? session.sub : undefined })
     }
 
+    if (pathname === '/api/country-pool' && method === 'GET') return sendCompressed(req, res, loadCountryPool())
+
     if (pathname === '/api/login' && method === 'POST') {
       if (!process.env.ADMIN_EMAIL || !process.env.ADMIN_PASSWORD_HASH) return send(res, 503, { error: 'not_configured' })
       const ip = clientIp(req)
@@ -86,6 +101,14 @@ export async function handleApi(req, res, pathname) {
     }
 
     if (!admin) return send(res, 401, { error: 'unauthorized' })
+
+    if (pathname === '/api/countries/refresh' && method === 'POST') {
+      try {
+        return send(res, 200, await refreshFromWorldBank())
+      } catch (e) {
+        return send(res, 502, { error: 'refresh_failed', detail: String(e.message ?? e).slice(0, 400) })
+      }
+    }
 
     if (pathname === '/api/status' && method === 'GET') return send(res, 200, await systemStatus())
 

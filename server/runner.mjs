@@ -1,10 +1,12 @@
 import { spawn } from 'node:child_process'
-import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
+import { ROOT } from './paths.mjs'
+import { loadCountryPool } from './countries.mjs'
+import { toMatraixPersona, toYaml } from './personagen.mjs'
 import { randomUUID } from 'node:crypto'
 
-export const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
+export { ROOT }
 export const MATRAIX_DIR = join(ROOT, 'vendor', 'MatrAIx')
 const DATA_DIR = join(ROOT, 'data')
 const CUSTOM_TASKS_DIR = join(ROOT, 'custom-tasks')
@@ -17,10 +19,11 @@ const RUN_TIMEOUT_MS = 2 * 60 * 60 * 1000
 const catalog = JSON.parse(readFileSync(join(ROOT, 'shared', 'tasks.json'), 'utf8'))
 const TASK_IDS = new Set(catalog.tasks.map((t) => t.id))
 const MODELS = new Set(catalog.models)
-const PERSONA_IDS = new Set(
+const DEV_PERSONA_IDS = new Set(
   JSON.parse(readFileSync(join(ROOT, 'shared', 'personas.json'), 'utf8')).personas.map((x) => x.id),
 )
 
+const COUNTRY_DATASET = 'persona/datasets/teknodoz-country'
 const SECRET_ENV = ['ADMIN_PASSWORD_HASH', 'SESSION_SECRET']
 
 function childEnv() {
@@ -86,6 +89,7 @@ export function stepsFor(kind, p) {
         '--task', task, '--execution-mode', 'auto',
         ...(p.personaIds.length ? [] : ['--sample-size', String(p.sampleSize)]),
         '--seed', String(p.seed), '--model-name', p.model, '--name', name,
+        ...(p.pool === 'country' && p.personaIds.length ? ['--dataset', COUNTRY_DATASET] : []),
         ...(p.personaIds.length ? ['--persona-ids', ...p.personaIds] : []),
       ],
       cwd: MATRAIX_DIR,
@@ -136,6 +140,26 @@ function killGroup(pid) {
   }
 }
 
+export function writeCountryDataset(run) {
+  const { personaIds = [], pool, mode } = run.params
+  if (pool !== 'country' || mode !== 'auto' || !personaIds.length || !existsSync(MATRAIX_DIR)) return
+  const dir = join(MATRAIX_DIR, 'persona', 'datasets', 'teknodoz-country')
+  rmSync(dir, { recursive: true, force: true })
+  mkdirSync(dir, { recursive: true })
+  const { meta, countries, personas } = loadCountryPool()
+  const byCountry = Object.fromEntries(countries.map((c) => [c.iso2, c]))
+  const byId = new Map(personas.map((x) => [x.id, x]))
+  const entries = []
+  for (const id of personaIds) {
+    const p = byId.get(id)
+    const obj = toMatraixPersona(p, byCountry[p.c], { source: meta.source, asOf: meta.asOf })
+    writeFileSync(join(dir, `persona_${id}.yaml`), toYaml(obj) + '\n')
+    entries.push({ persona_id: id, path: `${COUNTRY_DATASET}/persona_${id}.yaml`, source: 'teknodoz-synthetic', display_name: id, dimensions: obj.dimensions })
+  }
+  writeFileSync(join(dir, 'manifest.json'), JSON.stringify({ kind: 'teknodoz-country-sample', count: entries.length, schema_version: '1.0', personas: entries }))
+  append(run, `[wrote ${entries.length} country personas to ${COUNTRY_DATASET}]\n`)
+}
+
 export function syncCustomTasks(run) {
   const dest = join(MATRAIX_DIR, 'application', 'tasks')
   if (!existsSync(CUSTOM_TASKS_DIR) || !existsSync(dest)) return
@@ -153,7 +177,10 @@ async function execute(run) {
   run.status = 'running'
   run.startedAt = Date.now()
   try {
-    if (run.kind === 'simulation') syncCustomTasks(run)
+    if (run.kind === 'simulation') {
+      syncCustomTasks(run)
+      writeCountryDataset(run)
+    }
     for (const step of stepsFor(run.kind, run.params)) {
       const code = await runStep(run, step)
       if (run.status === 'canceled') return
@@ -179,15 +206,22 @@ export function validate(body) {
   const model = String(body?.model ?? '')
   const mode = body?.mode === 'auto' ? 'auto' : 'smoke'
   const rawIds = Array.isArray(body?.personaIds) ? body.personaIds : []
-  if (rawIds.length > 100 || !rawIds.every((id) => typeof id === 'string' && PERSONA_IDS.has(id))) {
-    return { error: 'invalid_personas' }
-  }
+  if (rawIds.length > 100 || !rawIds.every((id) => typeof id === 'string')) return { error: 'invalid_personas' }
   const personaIds = [...new Set(rawIds)]
+  let pool = 'dev'
+  if (personaIds.length) {
+    if (personaIds.every((id) => DEV_PERSONA_IDS.has(id))) pool = 'dev'
+    else {
+      const countryIds = new Set(loadCountryPool().personas.map((x) => x.id))
+      if (!personaIds.every((id) => countryIds.has(id))) return { error: 'invalid_personas' }
+      pool = 'country'
+    }
+  }
   if (!TASK_IDS.has(taskId)) return { error: 'invalid_task' }
   if (!Number.isInteger(sampleSize) || sampleSize < 1 || sampleSize > 100) return { error: 'invalid_sample_size' }
   if (!Number.isInteger(seed) || seed < 0 || seed > 1_000_000_000) return { error: 'invalid_seed' }
   if (!MODELS.has(model)) return { error: 'invalid_model' }
-  return { params: { taskId, sampleSize: personaIds.length || sampleSize, seed, model, mode, personaIds } }
+  return { params: { taskId, sampleSize: personaIds.length || sampleSize, seed, model, mode, personaIds, pool } }
 }
 
 export function startRun(kind, params) {

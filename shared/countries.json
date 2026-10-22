@@ -1,0 +1,1111 @@
+{
+ "_note": "Approximate baseline indicators (rounded, order of 2022-2024) curated by hand; NOT an authoritative extract. Refresh from the World Bank (CC BY 4.0) via Admin > Country data. Fields: pop=million people, y=% aged 0-14, e=% aged 65+, urban=% urban, gdp=GDP per capita PPP (current intl $), net=% internet users, unemp=% unemployed. langs = share of population with that native language (rest unspecified).",
+ "source": "baseline",
+ "asOf": "approx. 2022-2024",
+ "fetchedAt": null,
+ "countries": [
+  {
+   "iso2": "US",
+   "iso3": "USA",
+   "region": "North America",
+   "sub": "northern-america",
+   "cur": "USD",
+   "langs": [
+    [
+     "english",
+     0.78
+    ],
+    [
+     "spanish",
+     0.13
+    ]
+   ],
+   "pop": 335,
+   "y": 17.5,
+   "e": 17.7,
+   "urban": 83,
+   "gdp": 80000,
+   "net": 92,
+   "unemp": 3.7
+  },
+  {
+   "iso2": "CA",
+   "iso3": "CAN",
+   "region": "North America",
+   "sub": "northern-america",
+   "cur": "CAD",
+   "langs": [
+    [
+     "english",
+     0.56
+    ],
+    [
+     "french",
+     0.2
+    ],
+    [
+     "mandarin",
+     0.03
+    ]
+   ],
+   "pop": 40,
+   "y": 15.0,
+   "e": 18.5,
+   "urban": 82,
+   "gdp": 61000,
+   "net": 94,
+   "unemp": 5.4
+  },
+  {
+   "iso2": "MX",
+   "iso3": "MEX",
+   "region": "Latin America",
+   "sub": "central-america",
+   "cur": "MXN",
+   "langs": [
+    [
+     "spanish",
+     0.94
+    ]
+   ],
+   "pop": 128,
+   "y": 24.5,
+   "e": 8.0,
+   "urban": 81,
+   "gdp": 24000,
+   "net": 76,
+   "unemp": 2.8
+  },
+  {
+   "iso2": "BR",
+   "iso3": "BRA",
+   "region": "Latin America",
+   "sub": "south-america",
+   "cur": "BRL",
+   "langs": [
+    [
+     "portuguese",
+     0.97
+    ]
+   ],
+   "pop": 216,
+   "y": 19.5,
+   "e": 10.6,
+   "urban": 88,
+   "gdp": 20000,
+   "net": 84,
+   "unemp": 8.0
+  },
+  {
+   "iso2": "AR",
+   "iso3": "ARG",
+   "region": "Latin America",
+   "sub": "south-america",
+   "cur": "ARS",
+   "langs": [
+    [
+     "spanish",
+     0.96
+    ]
+   ],
+   "pop": 46,
+   "y": 22.0,
+   "e": 12.0,
+   "urban": 92,
+   "gdp": 27000,
+   "net": 88,
+   "unemp": 6.2
+  },
+  {
+   "iso2": "CO",
+   "iso3": "COL",
+   "region": "Latin America",
+   "sub": "south-america",
+   "cur": "COP",
+   "langs": [
+    [
+     "spanish",
+     0.98
+    ]
+   ],
+   "pop": 52,
+   "y": 20.5,
+   "e": 9.5,
+   "urban": 82,
+   "gdp": 20000,
+   "net": 73,
+   "unemp": 10.2
+  },
+  {
+   "iso2": "CL",
+   "iso3": "CHL",
+   "region": "Latin America",
+   "sub": "south-america",
+   "cur": "CLP",
+   "langs": [
+    [
+     "spanish",
+     0.96
+    ]
+   ],
+   "pop": 19.6,
+   "y": 17.5,
+   "e": 13.5,
+   "urban": 88,
+   "gdp": 30000,
+   "net": 94,
+   "unemp": 8.5
+  },
+  {
+   "iso2": "PE",
+   "iso3": "PER",
+   "region": "Latin America",
+   "sub": "south-america",
+   "cur": "PEN",
+   "langs": [
+    [
+     "spanish",
+     0.82
+    ]
+   ],
+   "pop": 34,
+   "y": 24.0,
+   "e": 9.5,
+   "urban": 79,
+   "gdp": 16000,
+   "net": 74,
+   "unemp": 4.5
+  },
+  {
+   "iso2": "GB",
+   "iso3": "GBR",
+   "region": "Western Europe",
+   "sub": "northern-europe",
+   "cur": "GBP",
+   "langs": [
+    [
+     "english",
+     0.92
+    ]
+   ],
+   "pop": 68,
+   "y": 17.5,
+   "e": 19.0,
+   "urban": 84,
+   "gdp": 56000,
+   "net": 97,
+   "unemp": 4.2
+  },
+  {
+   "iso2": "SE",
+   "iso3": "SWE",
+   "region": "Western Europe",
+   "sub": "northern-europe",
+   "cur": "SEK",
+   "langs": [
+    [
+     "swedish",
+     0.85
+    ]
+   ],
+   "pop": 10.5,
+   "y": 17.5,
+   "e": 20.5,
+   "urban": 88,
+   "gdp": 62000,
+   "net": 95,
+   "unemp": 7.7
+  },
+  {
+   "iso2": "DE",
+   "iso3": "DEU",
+   "region": "Western Europe",
+   "sub": "western-europe",
+   "cur": "EUR",
+   "langs": [
+    [
+     "german",
+     0.88
+    ]
+   ],
+   "pop": 84,
+   "y": 13.8,
+   "e": 22.5,
+   "urban": 78,
+   "gdp": 66000,
+   "net": 93,
+   "unemp": 3.0
+  },
+  {
+   "iso2": "FR",
+   "iso3": "FRA",
+   "region": "Western Europe",
+   "sub": "western-europe",
+   "cur": "EUR",
+   "langs": [
+    [
+     "french",
+     0.9
+    ]
+   ],
+   "pop": 68,
+   "y": 17.0,
+   "e": 21.8,
+   "urban": 82,
+   "gdp": 58000,
+   "net": 92,
+   "unemp": 7.3
+  },
+  {
+   "iso2": "NL",
+   "iso3": "NLD",
+   "region": "Western Europe",
+   "sub": "western-europe",
+   "cur": "EUR",
+   "langs": [
+    [
+     "dutch",
+     0.9
+    ]
+   ],
+   "pop": 17.9,
+   "y": 15.5,
+   "e": 20.5,
+   "urban": 93,
+   "gdp": 70000,
+   "net": 95,
+   "unemp": 3.6
+  },
+  {
+   "iso2": "ES",
+   "iso3": "ESP",
+   "region": "Western Europe",
+   "sub": "southern-europe",
+   "cur": "EUR",
+   "langs": [
+    [
+     "spanish",
+     0.85
+    ]
+   ],
+   "pop": 48,
+   "y": 13.5,
+   "e": 20.5,
+   "urban": 81,
+   "gdp": 51000,
+   "net": 94,
+   "unemp": 12.2
+  },
+  {
+   "iso2": "IT",
+   "iso3": "ITA",
+   "region": "Western Europe",
+   "sub": "southern-europe",
+   "cur": "EUR",
+   "langs": [
+    [
+     "italian",
+     0.93
+    ]
+   ],
+   "pop": 59,
+   "y": 12.2,
+   "e": 24.0,
+   "urban": 72,
+   "gdp": 55000,
+   "net": 85,
+   "unemp": 7.7
+  },
+  {
+   "iso2": "PT",
+   "iso3": "PRT",
+   "region": "Western Europe",
+   "sub": "southern-europe",
+   "cur": "EUR",
+   "langs": [
+    [
+     "portuguese",
+     0.95
+    ]
+   ],
+   "pop": 10.4,
+   "y": 12.8,
+   "e": 23.5,
+   "urban": 67,
+   "gdp": 46000,
+   "net": 85,
+   "unemp": 6.5
+  },
+  {
+   "iso2": "GR",
+   "iso3": "GRC",
+   "region": "Western Europe",
+   "sub": "southern-europe",
+   "cur": "EUR",
+   "langs": [
+    [
+     "greek",
+     0.95
+    ]
+   ],
+   "pop": 10.4,
+   "y": 13.2,
+   "e": 23.5,
+   "urban": 80,
+   "gdp": 36000,
+   "net": 83,
+   "unemp": 11.0
+  },
+  {
+   "iso2": "PL",
+   "iso3": "POL",
+   "region": "Eastern Europe",
+   "sub": "eastern-europe",
+   "cur": "PLN",
+   "langs": [
+    [
+     "polish",
+     0.97
+    ]
+   ],
+   "pop": 36.6,
+   "y": 14.5,
+   "e": 19.5,
+   "urban": 60,
+   "gdp": 46000,
+   "net": 87,
+   "unemp": 2.8
+  },
+  {
+   "iso2": "CZ",
+   "iso3": "CZE",
+   "region": "Eastern Europe",
+   "sub": "eastern-europe",
+   "cur": "CZK",
+   "langs": [
+    [
+     "czech",
+     0.93
+    ]
+   ],
+   "pop": 10.9,
+   "y": 15.5,
+   "e": 21.0,
+   "urban": 74,
+   "gdp": 54000,
+   "net": 89,
+   "unemp": 2.6
+  },
+  {
+   "iso2": "HU",
+   "iso3": "HUN",
+   "region": "Eastern Europe",
+   "sub": "eastern-europe",
+   "cur": "HUF",
+   "langs": [
+    [
+     "hungarian",
+     0.95
+    ]
+   ],
+   "pop": 9.6,
+   "y": 14.3,
+   "e": 20.5,
+   "urban": 72,
+   "gdp": 46000,
+   "net": 91,
+   "unemp": 4.2
+  },
+  {
+   "iso2": "RO",
+   "iso3": "ROU",
+   "region": "Eastern Europe",
+   "sub": "eastern-europe",
+   "cur": "RON",
+   "langs": [
+    [
+     "romanian",
+     0.85
+    ]
+   ],
+   "pop": 19,
+   "y": 15.5,
+   "e": 19.0,
+   "urban": 55,
+   "gdp": 42000,
+   "net": 86,
+   "unemp": 5.6
+  },
+  {
+   "iso2": "RU",
+   "iso3": "RUS",
+   "region": "Eastern Europe",
+   "sub": "eastern-europe",
+   "cur": "RUB",
+   "langs": [
+    [
+     "russian",
+     0.9
+    ]
+   ],
+   "pop": 144,
+   "y": 17.0,
+   "e": 16.5,
+   "urban": 75,
+   "gdp": 38000,
+   "net": 90,
+   "unemp": 3.2
+  },
+  {
+   "iso2": "TR",
+   "iso3": "TUR",
+   "region": "MENA",
+   "sub": "western-asia",
+   "cur": "TRY",
+   "langs": [
+    [
+     "turkish",
+     0.85
+    ]
+   ],
+   "pop": 85,
+   "y": 22.5,
+   "e": 9.5,
+   "urban": 77,
+   "gdp": 42000,
+   "net": 83,
+   "unemp": 9.4
+  },
+  {
+   "iso2": "IL",
+   "iso3": "ISR",
+   "region": "MENA",
+   "sub": "western-asia",
+   "cur": "ILS",
+   "langs": [
+    [
+     "hebrew",
+     0.75
+    ],
+    [
+     "arabic",
+     0.2
+    ]
+   ],
+   "pop": 9.8,
+   "y": 27.5,
+   "e": 12.5,
+   "urban": 93,
+   "gdp": 54000,
+   "net": 90,
+   "unemp": 3.4
+  },
+  {
+   "iso2": "SA",
+   "iso3": "SAU",
+   "region": "MENA",
+   "sub": "western-asia",
+   "cur": "SAR",
+   "langs": [
+    [
+     "arabic",
+     0.9
+    ]
+   ],
+   "pop": 36,
+   "y": 24.5,
+   "e": 3.5,
+   "urban": 85,
+   "gdp": 65000,
+   "net": 100,
+   "unemp": 4.5
+  },
+  {
+   "iso2": "AE",
+   "iso3": "ARE",
+   "region": "MENA",
+   "sub": "western-asia",
+   "cur": "AED",
+   "langs": [
+    [
+     "arabic",
+     0.12
+    ],
+    [
+     "english",
+     0.1
+    ],
+    [
+     "hindi",
+     0.1
+    ]
+   ],
+   "pop": 10,
+   "y": 14.5,
+   "e": 1.5,
+   "urban": 87,
+   "gdp": 82000,
+   "net": 99,
+   "unemp": 2.7
+  },
+  {
+   "iso2": "IR",
+   "iso3": "IRN",
+   "region": "MENA",
+   "sub": "southern-asia",
+   "cur": "IRR",
+   "langs": [
+    [
+     "persian",
+     0.55
+    ]
+   ],
+   "pop": 89,
+   "y": 23.5,
+   "e": 7.5,
+   "urban": 77,
+   "gdp": 17000,
+   "net": 79,
+   "unemp": 9.0
+  },
+  {
+   "iso2": "EG",
+   "iso3": "EGY",
+   "region": "MENA",
+   "sub": "northern-africa",
+   "cur": "EGP",
+   "langs": [
+    [
+     "arabic",
+     0.98
+    ]
+   ],
+   "pop": 112,
+   "y": 33.5,
+   "e": 5.5,
+   "urban": 43,
+   "gdp": 17500,
+   "net": 72,
+   "unemp": 7.0
+  },
+  {
+   "iso2": "MA",
+   "iso3": "MAR",
+   "region": "MENA",
+   "sub": "northern-africa",
+   "cur": "MAD",
+   "langs": [
+    [
+     "arabic",
+     0.7
+    ],
+    [
+     "french",
+     0.03
+    ]
+   ],
+   "pop": 37,
+   "y": 25.5,
+   "e": 8.5,
+   "urban": 66,
+   "gdp": 9500,
+   "net": 88,
+   "unemp": 13.0
+  },
+  {
+   "iso2": "NG",
+   "iso3": "NGA",
+   "region": "Sub-Saharan Africa",
+   "sub": "western-africa",
+   "cur": "NGN",
+   "langs": [
+    [
+     "hausa",
+     0.3
+    ],
+    [
+     "yoruba",
+     0.25
+    ],
+    [
+     "igbo",
+     0.18
+    ],
+    [
+     "english",
+     0.05
+    ]
+   ],
+   "pop": 224,
+   "y": 43.5,
+   "e": 2.8,
+   "urban": 54,
+   "gdp": 6000,
+   "net": 45,
+   "unemp": 4.5
+  },
+  {
+   "iso2": "GH",
+   "iso3": "GHA",
+   "region": "Sub-Saharan Africa",
+   "sub": "western-africa",
+   "cur": "GHS",
+   "langs": [
+    [
+     "english",
+     0.2
+    ]
+   ],
+   "pop": 34,
+   "y": 37.0,
+   "e": 3.5,
+   "urban": 59,
+   "gdp": 6700,
+   "net": 69,
+   "unemp": 3.9
+  },
+  {
+   "iso2": "KE",
+   "iso3": "KEN",
+   "region": "Sub-Saharan Africa",
+   "sub": "eastern-africa",
+   "cur": "KES",
+   "langs": [
+    [
+     "swahili",
+     0.5
+    ],
+    [
+     "english",
+     0.1
+    ]
+   ],
+   "pop": 55,
+   "y": 37.0,
+   "e": 3.0,
+   "urban": 29,
+   "gdp": 6500,
+   "net": 40,
+   "unemp": 5.5
+  },
+  {
+   "iso2": "ET",
+   "iso3": "ETH",
+   "region": "Sub-Saharan Africa",
+   "sub": "eastern-africa",
+   "cur": "ETB",
+   "langs": [
+    [
+     "amharic",
+     0.35
+    ]
+   ],
+   "pop": 126,
+   "y": 39.5,
+   "e": 3.5,
+   "urban": 23,
+   "gdp": 3200,
+   "net": 20,
+   "unemp": 3.5
+  },
+  {
+   "iso2": "ZA",
+   "iso3": "ZAF",
+   "region": "Sub-Saharan Africa",
+   "sub": "southern-africa",
+   "cur": "ZAR",
+   "langs": [
+    [
+     "zulu",
+     0.3
+    ],
+    [
+     "afrikaans",
+     0.12
+    ],
+    [
+     "english",
+     0.1
+    ]
+   ],
+   "pop": 60,
+   "y": 28.0,
+   "e": 6.0,
+   "urban": 68,
+   "gdp": 15000,
+   "net": 75,
+   "unemp": 32.0
+  },
+  {
+   "iso2": "IN",
+   "iso3": "IND",
+   "region": "South Asia",
+   "sub": "southern-asia",
+   "cur": "INR",
+   "langs": [
+    [
+     "hindi",
+     0.45
+    ],
+    [
+     "bengali",
+     0.08
+    ],
+    [
+     "marathi",
+     0.07
+    ],
+    [
+     "telugu",
+     0.07
+    ],
+    [
+     "tamil",
+     0.06
+    ],
+    [
+     "gujarati",
+     0.05
+    ],
+    [
+     "urdu",
+     0.04
+    ],
+    [
+     "punjabi",
+     0.03
+    ]
+   ],
+   "pop": 1428,
+   "y": 25.0,
+   "e": 7.0,
+   "urban": 36,
+   "gdp": 9200,
+   "net": 52,
+   "unemp": 4.2
+  },
+  {
+   "iso2": "PK",
+   "iso3": "PAK",
+   "region": "South Asia",
+   "sub": "southern-asia",
+   "cur": "PKR",
+   "langs": [
+    [
+     "punjabi",
+     0.45
+    ],
+    [
+     "urdu",
+     0.08
+    ]
+   ],
+   "pop": 240,
+   "y": 35.0,
+   "e": 4.5,
+   "urban": 38,
+   "gdp": 6200,
+   "net": 21,
+   "unemp": 5.0
+  },
+  {
+   "iso2": "BD",
+   "iso3": "BGD",
+   "region": "South Asia",
+   "sub": "southern-asia",
+   "cur": "BDT",
+   "langs": [
+    [
+     "bengali",
+     0.97
+    ]
+   ],
+   "pop": 173,
+   "y": 25.5,
+   "e": 6.0,
+   "urban": 40,
+   "gdp": 8600,
+   "net": 39,
+   "unemp": 5.0
+  },
+  {
+   "iso2": "LK",
+   "iso3": "LKA",
+   "region": "South Asia",
+   "sub": "southern-asia",
+   "cur": "LKR",
+   "langs": [
+    [
+     "tamil",
+     0.15
+    ]
+   ],
+   "pop": 22,
+   "y": 22.0,
+   "e": 11.0,
+   "urban": 19,
+   "gdp": 14000,
+   "net": 50,
+   "unemp": 4.7
+  },
+  {
+   "iso2": "NP",
+   "iso3": "NPL",
+   "region": "South Asia",
+   "sub": "southern-asia",
+   "cur": "NPR",
+   "langs": [],
+   "pop": 30,
+   "y": 27.0,
+   "e": 6.5,
+   "urban": 22,
+   "gdp": 5500,
+   "net": 51,
+   "unemp": 11.0
+  },
+  {
+   "iso2": "CN",
+   "iso3": "CHN",
+   "region": "East Asia",
+   "sub": "eastern-asia",
+   "cur": "CNY",
+   "langs": [
+    [
+     "mandarin",
+     0.8
+    ],
+    [
+     "cantonese",
+     0.06
+    ]
+   ],
+   "pop": 1410,
+   "y": 16.5,
+   "e": 14.0,
+   "urban": 66,
+   "gdp": 25000,
+   "net": 77,
+   "unemp": 5.2
+  },
+  {
+   "iso2": "JP",
+   "iso3": "JPN",
+   "region": "East Asia",
+   "sub": "eastern-asia",
+   "cur": "JPY",
+   "langs": [
+    [
+     "japanese",
+     0.98
+    ]
+   ],
+   "pop": 124,
+   "y": 11.5,
+   "e": 29.5,
+   "urban": 92,
+   "gdp": 52000,
+   "net": 85,
+   "unemp": 2.6
+  },
+  {
+   "iso2": "KR",
+   "iso3": "KOR",
+   "region": "East Asia",
+   "sub": "eastern-asia",
+   "cur": "KRW",
+   "langs": [
+    [
+     "korean",
+     0.97
+    ]
+   ],
+   "pop": 51.7,
+   "y": 11.0,
+   "e": 18.5,
+   "urban": 81,
+   "gdp": 57000,
+   "net": 97,
+   "unemp": 2.7
+  },
+  {
+   "iso2": "ID",
+   "iso3": "IDN",
+   "region": "Southeast Asia",
+   "sub": "south-eastern-asia",
+   "cur": "IDR",
+   "langs": [
+    [
+     "indonesian",
+     0.5
+    ]
+   ],
+   "pop": 277,
+   "y": 25.0,
+   "e": 7.0,
+   "urban": 58,
+   "gdp": 14500,
+   "net": 66,
+   "unemp": 5.3
+  },
+  {
+   "iso2": "VN",
+   "iso3": "VNM",
+   "region": "Southeast Asia",
+   "sub": "south-eastern-asia",
+   "cur": "VND",
+   "langs": [
+    [
+     "vietnamese",
+     0.85
+    ]
+   ],
+   "pop": 98,
+   "y": 23.0,
+   "e": 8.0,
+   "urban": 38,
+   "gdp": 15000,
+   "net": 79,
+   "unemp": 2.3
+  },
+  {
+   "iso2": "PH",
+   "iso3": "PHL",
+   "region": "Southeast Asia",
+   "sub": "south-eastern-asia",
+   "cur": "PHP",
+   "langs": [
+    [
+     "tagalog",
+     0.3
+    ]
+   ],
+   "pop": 117,
+   "y": 30.0,
+   "e": 5.5,
+   "urban": 48,
+   "gdp": 10000,
+   "net": 73,
+   "unemp": 4.5
+  },
+  {
+   "iso2": "TH",
+   "iso3": "THA",
+   "region": "Southeast Asia",
+   "sub": "south-eastern-asia",
+   "cur": "THB",
+   "langs": [
+    [
+     "thai",
+     0.9
+    ]
+   ],
+   "pop": 71,
+   "y": 15.5,
+   "e": 14.5,
+   "urban": 53,
+   "gdp": 22000,
+   "net": 88,
+   "unemp": 1.0
+  },
+  {
+   "iso2": "MY",
+   "iso3": "MYS",
+   "region": "Southeast Asia",
+   "sub": "south-eastern-asia",
+   "cur": "MYR",
+   "langs": [
+    [
+     "malay",
+     0.5
+    ],
+    [
+     "mandarin",
+     0.22
+    ],
+    [
+     "tamil",
+     0.06
+    ]
+   ],
+   "pop": 34,
+   "y": 22.0,
+   "e": 7.5,
+   "urban": 78,
+   "gdp": 36000,
+   "net": 97,
+   "unemp": 3.5
+  },
+  {
+   "iso2": "SG",
+   "iso3": "SGP",
+   "region": "Southeast Asia",
+   "sub": "south-eastern-asia",
+   "cur": "SGD",
+   "langs": [
+    [
+     "english",
+     0.35
+    ],
+    [
+     "mandarin",
+     0.35
+    ],
+    [
+     "malay",
+     0.12
+    ],
+    [
+     "tamil",
+     0.03
+    ]
+   ],
+   "pop": 5.9,
+   "y": 11.5,
+   "e": 14.5,
+   "urban": 100,
+   "gdp": 130000,
+   "net": 96,
+   "unemp": 2.0
+  },
+  {
+   "iso2": "AU",
+   "iso3": "AUS",
+   "region": "Oceania",
+   "sub": "australia-nz",
+   "cur": "AUD",
+   "langs": [
+    [
+     "english",
+     0.75
+    ]
+   ],
+   "pop": 26.5,
+   "y": 17.5,
+   "e": 17.0,
+   "urban": 86,
+   "gdp": 64000,
+   "net": 97,
+   "unemp": 3.7
+  },
+  {
+   "iso2": "NZ",
+   "iso3": "NZL",
+   "region": "Oceania",
+   "sub": "australia-nz",
+   "cur": "NZD",
+   "langs": [
+    [
+     "english",
+     0.8
+    ]
+   ],
+   "pop": 5.2,
+   "y": 18.0,
+   "e": 16.5,
+   "urban": 87,
+   "gdp": 52000,
+   "net": 96,
+   "unemp": 3.7
+  }
+ ]
+}

@@ -3,6 +3,7 @@ import { ApiError, api, type SystemStatus } from '../api'
 import { useAuth } from '../auth'
 import RunList from '../components/RunList'
 import { useI18n } from '../i18n'
+import { reloadCountryPool, useCountryPool } from '../personas'
 
 const card = 'rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900'
 const input =
@@ -56,6 +57,49 @@ function Row({ label, ok }: { label: string; ok: boolean }) {
       <span>{label}</span>
       <span className={ok ? 'text-emerald-500' : 'text-red-500'}>{ok ? `✓ ${t.admin.ok}` : `✕ ${t.admin.missing}`}</span>
     </li>
+  )
+}
+
+function CountryData() {
+  const { t } = useI18n()
+  const { data } = useCountryPool()
+  const [busy, setBusy] = useState(false)
+  const [msg, setMsg] = useState('')
+  const [bad, setBad] = useState(false)
+
+  const refresh = async () => {
+    setBusy(true)
+    setMsg('')
+    try {
+      const r = await api<{ indicators: Record<string, { ok: boolean }>; fallbackCount: number }>('/api/countries/refresh', { method: 'POST', body: {} })
+      const all = Object.values(r.indicators)
+      setBad(false)
+      setMsg(t.admin.cdDone.replace('{ok}', String(all.filter((x) => x.ok).length)).replace('{total}', String(all.length)).replace('{fb}', String(r.fallbackCount)))
+      reloadCountryPool()
+    } catch {
+      setBad(true)
+      setMsg(t.admin.cdFail)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <div className={card}>
+      <h2 className="font-semibold">{t.admin.cdTitle}</h2>
+      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{t.admin.cdText}</p>
+      {data && (
+        <dl className="mt-3 grid gap-x-4 gap-y-1 text-sm sm:grid-cols-3">
+          <div><dt className="text-xs text-slate-500">{t.admin.cdSource}</dt><dd>{data.meta.source === 'world-bank' ? t.personas.dataWorldBank : t.personas.dataBaseline}</dd></div>
+          <div><dt className="text-xs text-slate-500">{t.admin.cdAsOf}</dt><dd>{data.meta.asOf}</dd></div>
+          <div><dt className="text-xs text-slate-500">{t.admin.cdFetched}</dt><dd>{data.meta.fetchedAt ? new Date(data.meta.fetchedAt).toLocaleString() : '—'}</dd></div>
+        </dl>
+      )}
+      <button type="button" onClick={refresh} disabled={busy} className="mt-3 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white disabled:opacity-50">
+        {busy ? t.admin.cdBusy : t.admin.cdBtn}
+      </button>
+      {msg && <p role="status" className={`mt-2 text-sm ${bad ? 'text-red-500' : 'text-emerald-500'}`}>{msg}</p>}
+    </div>
   )
 }
 
@@ -128,6 +172,8 @@ function Panel() {
         </button>
         {error && <p role="alert" className="mt-2 text-sm text-red-500">{error}</p>}
       </div>
+
+      <CountryData />
 
       <div>
         <h2 className="mb-3 font-semibold">{t.sim.history}</h2>
