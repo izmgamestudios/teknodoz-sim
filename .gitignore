@@ -150,3 +150,7 @@ vite.config.ts.timestamp-*
 
 # MatrAIx vendor checkout (96MB) — see scripts/setup-matraix.sh
 vendor/
+
+# secrets & runtime data
+.env
+data/

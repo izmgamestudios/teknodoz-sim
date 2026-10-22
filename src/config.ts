@@ -6,11 +6,13 @@ export const CREDITS = {
   linkedin: 'https://www.linkedin.com/in/huseyin-bayer-izmgamestudios',
 } as const
 
-export type PageId = 'dashboard' | 'personas' | 'runs' | 'credits'
+export type PageId = 'dashboard' | 'personas' | 'runs' | 'faq' | 'admin' | 'credits'
 
-export const NAV_ITEMS: { id: PageId; label: string; icon: string }[] = [
-  { id: 'dashboard', label: 'Panel', icon: '◈' },
-  { id: 'personas', label: 'Personalar', icon: '☺' },
-  { id: 'runs', label: 'Simülasyonlar', icon: '▶' },
-  { id: 'credits', label: 'Credits', icon: '★' },
+export const NAV_ITEMS: { id: PageId; icon: string }[] = [
+  { id: 'dashboard', icon: '◈' },
+  { id: 'personas', icon: '☺' },
+  { id: 'runs', icon: '▶' },
+  { id: 'faq', icon: '?' },
+  { id: 'admin', icon: '⚙' },
+  { id: 'credits', icon: '★' },
 ]

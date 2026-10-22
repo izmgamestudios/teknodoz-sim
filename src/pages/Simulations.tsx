@@ -1,42 +1,53 @@
 import { useMemo, useState } from 'react'
-import { KIND_LABELS, MODELS, TASKS, buildCommands, type TaskKind } from '../tasks'
+import { ApiError, api } from '../api'
+import { useAuth } from '../auth'
+import RunList from '../components/RunList'
+import type { PageId } from '../config'
+import { useI18n } from '../i18n'
+import { KINDS, MODELS, TASKS, type TaskKind } from '../tasks'
 
 const card = 'rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900'
 const input =
-  'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-950'
+  'mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-950'
 
-export default function Simulations() {
+export default function Simulations({ go }: { go: (p: PageId) => void }) {
+  const { t } = useI18n()
+  const { admin, loading } = useAuth()
   const [kind, setKind] = useState<TaskKind | 'all'>('all')
   const [taskId, setTaskId] = useState(TASKS[0].id)
   const [sampleSize, setSampleSize] = useState(4)
   const [seed, setSeed] = useState(42)
-  const [model, setModel] = useState<string>(MODELS[0])
-  const [mode, setMode] = useState<'auto' | 'smoke'>('smoke')
-  const [copied, setCopied] = useState(false)
+  const [model, setModel] = useState(MODELS[0])
+  const [mode, setMode] = useState<'smoke' | 'auto'>('smoke')
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+  const [tick, setTick] = useState(0)
 
   const visible = useMemo(() => TASKS.filter((x) => kind === 'all' || x.kind === kind), [kind])
   const task = TASKS.find((x) => x.id === taskId) ?? TASKS[0]
-  const script = buildCommands({ task, sampleSize, seed, model, mode }).join('\n')
+  const text = t.tasks[task.id]
 
-  const copy = async () => {
+  const start = async () => {
+    setBusy(true)
+    setError('')
     try {
-      await navigator.clipboard.writeText(script)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1500)
-    } catch {
-      /* clipboard unavailable */
+      await api('/api/runs', { method: 'POST', body: { taskId, sampleSize, seed, model, mode } })
+      setTick((n) => n + 1)
+    } catch (e) {
+      const code = e instanceof ApiError ? e.code : 'server_error'
+      setError(t.sim.errors[code] ?? t.sim.errors.server_error)
+    } finally {
+      setBusy(false)
     }
   }
 
   return (
     <section className="max-w-3xl">
-      <h1 className="text-2xl font-bold">Simülasyonlar</h1>
-      <p className="mt-2 text-slate-500 dark:text-slate-400">
-        MatrAIx persona motoru ile görev seç, komutu üret, sunucuda çalıştır.
-      </p>
+      <h1 className="text-2xl font-bold">{t.sim.title}</h1>
+      <p className="mt-2 text-slate-500 dark:text-slate-400">{t.sim.intro}</p>
 
       <div className="mt-6 flex flex-wrap gap-2">
-        {(['all', ...Object.keys(KIND_LABELS)] as (TaskKind | 'all')[]).map((k) => (
+        {(['all', ...KINDS] as (TaskKind | 'all')[]).map((k) => (
           <button
             key={k}
             type="button"
@@ -46,74 +57,80 @@ export default function Simulations() {
               if (first) setTaskId(first.id)
             }}
             className={`rounded-full px-3 py-1 text-xs font-medium ${
-              kind === k
-                ? 'bg-brand text-white'
-                : 'bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
+              kind === k ? 'bg-brand text-white' : 'bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
             }`}
           >
-            {k === 'all' ? 'Tümü' : KIND_LABELS[k]}
+            {k === 'all' ? t.sim.all : t.kinds[k]}
           </button>
         ))}
       </div>
 
       <div className={`${card} mt-4 grid gap-4 sm:grid-cols-2`}>
-        <label className="sm:col-span-2 text-sm">
-          Görev
-          <select className={`${input} mt-1`} value={taskId} onChange={(e) => setTaskId(e.target.value)}>
+        <label className="text-sm sm:col-span-2">
+          {t.sim.task}
+          <select className={input} value={taskId} onChange={(e) => setTaskId(e.target.value)}>
             {visible.map((x) => (
               <option key={x.id} value={x.id}>
-                {x.id}
+                {t.tasks[x.id]?.title ?? x.id}
               </option>
             ))}
           </select>
         </label>
+        <div className="rounded-lg bg-slate-100 p-3 text-sm dark:bg-slate-950 sm:col-span-2">
+          <span className="mr-2 rounded-full bg-brand/15 px-2 py-0.5 text-xs font-medium text-brand-dark dark:text-indigo-300">
+            {t.kinds[task.kind]}
+          </span>
+          {text?.desc}
+          {task.needsDocker && <p className="mt-2 text-xs text-amber-600 dark:text-amber-300">{t.sim.dockerWarn}</p>}
+        </div>
         <label className="text-sm">
-          Persona sayısı
-          <input className={`${input} mt-1`} type="number" min={1} max={200} value={sampleSize}
-            onChange={(e) => setSampleSize(Math.max(1, Math.min(200, Number(e.target.value) || 1)))} />
+          {t.sim.personas}
+          <input className={input} type="number" min={1} max={100} value={sampleSize}
+            onChange={(e) => setSampleSize(Math.max(1, Math.min(100, Math.trunc(Number(e.target.value)) || 1)))} />
         </label>
         <label className="text-sm">
-          Seed
-          <input className={`${input} mt-1`} type="number" value={seed}
-            onChange={(e) => setSeed(Number(e.target.value) || 0)} />
+          {t.sim.seed}
+          <input className={input} type="number" min={0} value={seed}
+            onChange={(e) => setSeed(Math.max(0, Math.trunc(Number(e.target.value)) || 0))} />
         </label>
         <label className="text-sm">
-          Model
-          <select className={`${input} mt-1`} value={model} onChange={(e) => setModel(e.target.value)}>
+          {t.sim.model}
+          <select className={input} value={model} onChange={(e) => setModel(e.target.value)}>
             {MODELS.map((m) => <option key={m}>{m}</option>)}
           </select>
         </label>
         <label className="text-sm">
-          Mod
-          <select className={`${input} mt-1`} value={mode} onChange={(e) => setMode(e.target.value as 'auto' | 'smoke')}>
-            <option value="smoke">Smoke test (API key gerekmez)</option>
-            <option value="auto">Gerçek çalıştırma (API key gerekir)</option>
+          {t.sim.mode}
+          <select className={input} value={mode} onChange={(e) => setMode(e.target.value as 'smoke' | 'auto')}>
+            <option value="smoke">{t.sim.modeSmoke}</option>
+            <option value="auto">{t.sim.modeAuto}</option>
           </select>
         </label>
       </div>
 
-      {task.needsDocker && (
-        <p className="mt-3 text-xs text-amber-600 dark:text-amber-300">
-          Bu görev Docker gerektirir (sunucuda kurulu olmalı ve kullanıcı docker grubunda olmalı).
-        </p>
-      )}
-
-      <div className={`${card} mt-4`}>
-        <div className="mb-2 flex items-center justify-between">
-          <span className="text-xs uppercase tracking-wide text-slate-500">
-            Sunucuda çalıştır: ~/app/vendor/MatrAIx
-          </span>
-          <button type="button" onClick={copy} className="rounded-md bg-brand px-3 py-1 text-xs font-medium text-white">
-            {copied ? 'Kopyalandı' : 'Kopyala'}
+      {!loading && !admin ? (
+        <div className={`${card} mt-4`}>
+          <div className="font-medium">{t.sim.loginTitle}</div>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{t.sim.loginText}</p>
+          <button type="button" onClick={() => go('admin')} className="mt-3 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white">
+            {t.sim.goLogin}
           </button>
         </div>
-        <pre className="overflow-x-auto whitespace-pre text-xs leading-relaxed">{script}</pre>
-        {mode === 'auto' && (
-          <p className="mt-3 text-xs text-slate-500">
-            Önce sunucuda <code>export ANTHROPIC_API_KEY=...</code> ayarla (key'i repo'ya koyma).
-          </p>
-        )}
-      </div>
+      ) : (
+        <>
+          <button
+            type="button"
+            disabled={busy || loading}
+            onClick={start}
+            className="mt-4 rounded-lg bg-brand px-5 py-2.5 text-sm font-medium text-white disabled:opacity-50"
+          >
+            {busy ? t.sim.starting : t.sim.start}
+          </button>
+          {error && <p role="alert" className="mt-2 text-sm text-red-500">{error}</p>}
+          <h2 className="mb-3 mt-8 text-lg font-semibold">{t.sim.history}</h2>
+          <RunList refreshKey={tick} />
+        </>
+      )}
     </section>
   )
 }

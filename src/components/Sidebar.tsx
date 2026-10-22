@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { NAV_ITEMS, type PageId } from '../config'
+import { LANGS, useI18n, type Lang } from '../i18n'
 import { useTheme } from '../theme'
 
 type Props = { active: PageId; onSelect: (id: PageId) => void }
@@ -7,6 +8,7 @@ type Props = { active: PageId; onSelect: (id: PageId) => void }
 export default function Sidebar({ active, onSelect }: Props) {
   const [open, setOpen] = useState(false)
   const { theme, toggle } = useTheme()
+  const { t, lang, setLang } = useI18n()
 
   const select = (id: PageId) => {
     onSelect(id)
@@ -17,7 +19,7 @@ export default function Sidebar({ active, onSelect }: Props) {
     <>
       <button
         type="button"
-        aria-label="Menüyü aç"
+        aria-label={t.sidebar.menu}
         onClick={() => setOpen(true)}
         className="fixed left-3 top-3 z-30 rounded-lg bg-slate-200 px-3 py-2 text-lg dark:bg-slate-800 md:hidden"
       >
@@ -33,14 +35,14 @@ export default function Sidebar({ active, onSelect }: Props) {
           <div className="text-xl font-bold tracking-tight">
             Tekno<span className="text-brand">doz</span>
           </div>
-          <div className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-500">
-            Simulation
+          <div lang="en" className="text-[11px] font-semibold uppercase tracking-[0.35em] text-slate-500">
+            {t.brand.simulation}
           </div>
           <span className="mt-3 inline-block rounded-full border border-amber-500/40 bg-amber-400/10 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-300">
-            Beta · Erken Erişim
+            {t.brand.beta}
           </span>
         </div>
-        <nav className="flex-1 space-y-1 px-3">
+        <nav className="flex-1 space-y-1 overflow-y-auto px-3">
           {NAV_ITEMS.map((item) => (
             <button
               key={item.id}
@@ -54,20 +56,36 @@ export default function Sidebar({ active, onSelect }: Props) {
               }`}
             >
               <span className="w-5 text-center">{item.icon}</span>
-              {item.label}
+              {t.nav[item.id]}
             </button>
           ))}
         </nav>
-        <div className="flex items-center justify-between border-t border-slate-200 px-5 py-4 text-xs text-slate-500 dark:border-slate-800">
-          <span>v0.2.0 · Beta</span>
-          <button
-            type="button"
-            onClick={toggle}
-            aria-label="Tema değiştir"
-            className="rounded-md border border-slate-300 px-2 py-1 dark:border-slate-700"
-          >
-            {theme === 'dark' ? '☀ Light' : '☾ Dark'}
-          </button>
+        <div className="space-y-3 border-t border-slate-200 px-5 py-4 text-xs text-slate-500 dark:border-slate-800">
+          <label className="block">
+            <span className="sr-only">{t.sidebar.language}</span>
+            <select
+              value={lang}
+              onChange={(e) => setLang(e.target.value as Lang)}
+              className="w-full rounded-md border border-slate-300 bg-white px-2 py-1 dark:border-slate-700 dark:bg-slate-950"
+            >
+              {(Object.keys(LANGS) as Lang[]).map((l) => (
+                <option key={l} value={l}>
+                  {LANGS[l].langName}
+                </option>
+              ))}
+            </select>
+          </label>
+          <div className="flex items-center justify-between">
+            <span>{t.sidebar.version}</span>
+            <button
+              type="button"
+              onClick={toggle}
+              aria-label={t.sidebar.theme}
+              className="rounded-md border border-slate-300 px-2 py-1 dark:border-slate-700"
+            >
+              {theme === 'dark' ? t.sidebar.light : t.sidebar.dark}
+            </button>
+          </div>
         </div>
       </aside>
     </>

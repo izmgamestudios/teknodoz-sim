@@ -4,6 +4,14 @@ import { readFile, stat } from 'node:fs/promises'
 import { extname, join, normalize, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+try {
+  process.loadEnvFile(fileURLToPath(new URL('./.env', import.meta.url)))
+} catch {
+  /* .env is optional */
+}
+
+const { handleApi } = await import('./server/api.mjs')
+
 const ROOT = resolve(fileURLToPath(new URL('./dist', import.meta.url)))
 const PORT = Number(process.env.PORT) || 3000
 const HOST = process.env.HOST || '127.0.0.1'
@@ -36,6 +44,7 @@ async function resolveFile(urlPath) {
 createServer(async (req, res) => {
   try {
     const { pathname } = new URL(req.url ?? '/', 'http://localhost')
+    if (pathname.startsWith('/api/')) return await handleApi(req, res, pathname)
     const file = await resolveFile(pathname)
     if (!file) {
       res.writeHead(404, { 'Content-Type': 'text/plain' }).end('Not found')
@@ -47,6 +56,9 @@ createServer(async (req, res) => {
       'Content-Type': TYPES[ext] ?? 'application/octet-stream',
       'Cache-Control': file.includes(`${sep}assets${sep}`) ? 'public, max-age=31536000, immutable' : 'no-cache',
       'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'Referrer-Policy': 'same-origin',
+      'Content-Security-Policy': "default-src 'self'; img-src 'self' data:; frame-ancestors 'none'",
     })
     res.end(body)
   } catch {
