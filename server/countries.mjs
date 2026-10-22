@@ -120,3 +120,42 @@ export async function refreshFromWorldBank({ fetchImpl = fetch } = {}) {
   cache = { key: '', value: null }
   return { asOf, fetchedAt: meta.fetchedAt, indicators: status, fallbackCount: fallbacks.length, fallbacks: fallbacks.slice(0, 30) }
 }
+
+const EDIT_RANGES = { y: [0, 100], e: [0, 100], urban: [0, 100], net: [0, 100], unemp: [0, 100], gdp: [0, 300000], pop: [0, 2000] }
+export const EDIT_FIELDS = Object.keys(EDIT_RANGES)
+
+/**
+ * Admin edits of the country table. `edits` is [{ iso2, y?, e?, ... }]; unknown countries/fields and out-of-range values
+ * are rejected. The synthetic pool is regenerated from the edited table with `perCountry` personas and `seed`.
+ */
+export function saveCountryEdits(edits, { perCountry = PER_COUNTRY, seed = SEED } = {}) {
+  if (!Array.isArray(edits) || edits.length > 400) throw new Error('invalid_edits')
+  if (!Number.isInteger(perCountry) || perCountry < 4 || perCountry > 60) throw new Error('invalid_per_country')
+  if (!Number.isInteger(seed) || seed < 0 || seed > 2 ** 31) throw new Error('invalid_seed')
+  const live = existsSync(LIVE_COUNTRIES)
+  const file = readJson(live ? LIVE_COUNTRIES : BASE_COUNTRIES)
+  const byIso = new Map(file.countries.map((c) => [c.iso2, c]))
+  const next = new Map()
+  for (const e of edits) {
+    const c = byIso.get(e?.iso2)
+    if (!c) throw new Error('unknown_country')
+    const copy = { ...(next.get(c.iso2) ?? c) }
+    for (const f of EDIT_FIELDS) {
+      if (e[f] === undefined) continue
+      const v = Number(e[f])
+      const [lo, hi] = EDIT_RANGES[f]
+      if (!Number.isFinite(v) || v < lo || v > hi) throw new Error('out_of_range')
+      copy[f] = Math.round(v * 10) / 10
+    }
+    if (copy.y + copy.e > 100) throw new Error('out_of_range')
+    next.set(c.iso2, copy)
+  }
+  const countries = file.countries.map((c) => next.get(c.iso2) ?? c)
+  const meta = { source: file.source, asOf: file.asOf, fetchedAt: file.fetchedAt ?? null, edited: new Date().toISOString() }
+  const out = { ...file, ...meta, countries }
+  mkdirSync(DATA_DIR, { recursive: true })
+  writeFileSync(LIVE_COUNTRIES, JSON.stringify(out))
+  writeFileSync(LIVE_POOL, JSON.stringify({ meta: { generator: 'teknodoz-country-sampler', perCountry, seed, ...meta }, personas: generatePool(countries, perCountry, seed) }))
+  cache = { key: '', value: null }
+  return { countries: countries.length, personas: countries.length * perCountry, perCountry, seed }
+}

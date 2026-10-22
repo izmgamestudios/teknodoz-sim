@@ -4,6 +4,7 @@ import { useAuth } from '../auth'
 import RunList from '../components/RunList'
 import { useI18n } from '../i18n'
 import { reloadCountryPool, useCountryPool } from '../personas'
+import AdminSettings, { type SettingsTab } from './AdminSettings'
 
 const card = 'rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900'
 const input =
@@ -309,13 +310,39 @@ function Panel() {
   )
 }
 
+const TABS: ('system' | SettingsTab)[] = ['system', 'brand', 'menus', 'pages', 'content', 'data']
+
+function Tabs() {
+  const { t } = useI18n()
+  const [tab, setTab] = useState<'system' | SettingsTab>('system')
+  return (
+    <div>
+      <div role="tablist" className="mb-6 flex flex-wrap gap-1 border-b border-slate-200 dark:border-slate-800">
+        {TABS.map((id) => (
+          <button
+            key={id}
+            type="button"
+            role="tab"
+            aria-selected={tab === id}
+            onClick={() => setTab(id)}
+            className={`-mb-px border-b-2 px-3 py-2 text-sm ${tab === id ? 'border-brand font-medium text-brand' : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-white'}`}
+          >
+            {t.admin.set.tabs[id]}
+          </button>
+        ))}
+      </div>
+      {tab === 'system' ? <Panel /> : <AdminSettings tab={tab} />}
+    </div>
+  )
+}
+
 export default function Admin() {
   const { t } = useI18n()
   const { admin, loading } = useAuth()
   return (
-    <section className="max-w-3xl">
+    <section className="max-w-4xl">
       <h1 className="mb-6 text-2xl font-bold">{t.admin.title}</h1>
-      {loading ? null : admin ? <Panel /> : <Login />}
+      {loading ? null : admin ? <Tabs /> : <Login />}
     </section>
   )
 }

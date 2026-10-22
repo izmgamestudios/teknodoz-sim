@@ -5,7 +5,8 @@ import { useSelection } from '../selection'
 import RunList from '../components/RunList'
 import type { PageId } from '../config'
 import { useI18n } from '../i18n'
-import { KINDS, METHODS, MODELS, TASKS, type Method, type SimTask, type TaskKind } from '../tasks'
+import { useCatalog } from '../catalog'
+import { KINDS, METHODS, type Method, type SimTask, type TaskKind } from '../tasks'
 
 const card = 'rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900'
 const input =
@@ -13,6 +14,7 @@ const input =
 
 export default function Simulations({ go }: { go: (p: PageId) => void }) {
   const { t } = useI18n()
+  const { tasks: TASKS, models: MODELS } = useCatalog()
   const { admin, loading } = useAuth()
   const { ids, clear } = useSelection()
   const [kind, setKind] = useState<TaskKind | 'all'>('all')
@@ -28,8 +30,8 @@ export default function Simulations({ go }: { go: (p: PageId) => void }) {
 
   const matches = (x: SimTask, k: TaskKind | 'all', m: Method | 'all') =>
     (k === 'all' || x.kind === k) && (m === 'all' || x.method === m)
-  const visible = useMemo(() => TASKS.filter((x) => matches(x, kind, method)), [kind, method])
-  const usedMethods = useMemo(() => METHODS.filter((m) => TASKS.some((x) => x.method === m)), [])
+  const visible = useMemo(() => TASKS.filter((x) => matches(x, kind, method)), [TASKS, kind, method])
+  const usedMethods = useMemo(() => METHODS.filter((m) => TASKS.some((x) => x.method === m)), [TASKS])
   const pick = (k: TaskKind | 'all', m: Method | 'all') => {
     setKind(k)
     setMethod(m)

@@ -1,3 +1,4 @@
+import { loadSettings } from './settings.mjs'
 import { spawn } from 'node:child_process'
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -233,7 +234,7 @@ export function validate(body) {
   if (!TASK_IDS.has(taskId) && !(STUDY_ID_RE.test(taskId) && getStudy(taskId))) return { error: 'invalid_task' }
   if (!Number.isInteger(sampleSize) || sampleSize < 1 || sampleSize > 100) return { error: 'invalid_sample_size' }
   if (!Number.isInteger(seed) || seed < 0 || seed > 1_000_000_000) return { error: 'invalid_seed' }
-  if (!MODELS.has(model)) return { error: 'invalid_model' }
+  if (!MODELS.has(model) && !loadSettings().seed.models.includes(model)) return { error: 'invalid_model' }
   return { params: { taskId, sampleSize: personaIds.length || sampleSize, seed, model, mode, personaIds, pool } }
 }
 

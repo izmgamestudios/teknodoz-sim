@@ -3,12 +3,13 @@ import { ApiError, api } from '../api'
 import { useAuth } from '../auth'
 import RunList from '../components/RunList'
 import type { PageId } from '../config'
+import { useSiteSettings } from '../siteSettings'
 import { useI18n } from '../i18n'
 import { blank, MAX_QUESTIONS, parseImport, type DraftQuestion, type QType } from '../importers'
 import { useSelection } from '../selection'
 import { useStudyDraft, type SourceType } from '../studyDraft'
 import type { TemplateId } from '../studyTemplates'
-import { MODELS } from '../tasks'
+import { useCatalog } from '../catalog'
 
 type Notice = { kind: 'info' | 'warn' | 'error'; text: string }
 
@@ -31,6 +32,8 @@ function questionValid(q: DraftQuestion) {
 
 export default function Study({ go }: { go: (p: PageId) => void }) {
   const { t } = useI18n()
+  const { settings } = useSiteSettings()
+  const { models: MODELS } = useCatalog()
   const errs = t.study.errors as Record<string, string>
   const { admin, loading } = useAuth()
   const selection = useSelection()
@@ -213,7 +216,7 @@ export default function Study({ go }: { go: (p: PageId) => void }) {
         </div>
         <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
           <span className="text-xs text-slate-500">{t.study.tplTitle}:</span>
-          {(['website', 'appstore', 'product', 'blank'] as TemplateId[]).map((id) => (
+          {(['website', 'appstore', 'product', 'blank'] as TemplateId[]).filter((id) => !settings.seed.hiddenTemplates.includes(id)).map((id) => (
             <button key={id} type="button" onClick={() => loadTemplate(id)} className={btn}>
               {t.study.tpl[id]}
             </button>

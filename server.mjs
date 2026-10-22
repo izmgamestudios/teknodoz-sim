@@ -60,7 +60,7 @@ createServer(async (req, res) => {
       'X-Content-Type-Options': 'nosniff',
       'X-Frame-Options': 'DENY',
       'Referrer-Policy': 'same-origin',
-      'Content-Security-Policy': "default-src 'self'; img-src 'self' data:; frame-ancestors 'none'",
+      'Content-Security-Policy': "default-src 'self'; img-src 'self' data: https:; frame-ancestors 'none'",
     })
     res.end(body)
   } catch {

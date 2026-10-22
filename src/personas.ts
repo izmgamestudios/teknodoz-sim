@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { api } from './api'
+import { useSiteSettings } from './siteSettings'
 
 export type Persona = { id: string; name: string; source: string; d: Record<string, string> }
 export type PersonaData = { groups: Record<'profile' | 'decision' | 'style', string[]>; valueKeys: string[]; personas: Persona[] }
@@ -53,8 +54,9 @@ export function reloadCountryPool() {
   poolPromise = null
 }
 
-export function useCountryPool(enabled = true): { data: CountryPool | null; error: boolean } {
+export function useCountryPool(enabled = true, includeHidden = false): { data: CountryPool | null; error: boolean } {
   const [state, setState] = useState<{ data: CountryPool | null; error: boolean }>({ data: null, error: false })
+  const hidden = useSiteSettings().settings.seed.hiddenCountries
   useEffect(() => {
     if (!enabled) return
     poolPromise ??= api<CountryPool>('/api/country-pool')
@@ -69,7 +71,15 @@ export function useCountryPool(enabled = true): { data: CountryPool | null; erro
       alive = false
     }
   }, [enabled])
-  return state
+  const data = useMemo(() => {
+    if (!state.data || !hidden.length || includeHidden) return state.data
+    return {
+      ...state.data,
+      countries: state.data.countries.filter((c) => !hidden.includes(c.iso2)),
+      personas: state.data.personas.filter((p) => !hidden.includes(p.c)),
+    }
+  }, [state.data, hidden, includeHidden])
+  return { data, error: state.error }
 }
 
 export function countryName(iso2: string, lang: string): string {

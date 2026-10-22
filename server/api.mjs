@@ -2,7 +2,8 @@ import {
   SESSION_MAX_AGE_S, clearFailures, createSession, isLockedOut, readSession, recordFailure, verifyPassword,
 } from './auth.mjs'
 import { gzipSync } from 'node:zlib'
-import { loadCountryPool, refreshFromWorldBank } from './countries.mjs'
+import { loadCountryPool, refreshFromWorldBank, saveCountryEdits } from './countries.mjs'
+import { loadSettings, MAX_SETTINGS_BYTES, resetSettings, saveSettings } from './settings.mjs'
 import { cancelRun, getRun, isBusy, listRuns, startRun, systemStatus, validate, validateRunOptions } from './runner.mjs'
 import { createStudy, listStudies, previewSource, validateStudyInput } from './studies.mjs'
 import { collectResults } from './results.mjs'
@@ -84,6 +85,8 @@ export async function handleApi(req, res, pathname) {
       return send(res, 200, { admin: Boolean(admin), email: admin ? session.sub : undefined })
     }
 
+    if (pathname === '/api/settings' && method === 'GET') return send(res, 200, loadSettings())
+
     if (pathname === '/api/country-pool' && method === 'GET') return sendCompressed(req, res, loadCountryPool())
 
     if (pathname === '/api/login' && method === 'POST') {
@@ -114,6 +117,22 @@ export async function handleApi(req, res, pathname) {
         return send(res, 200, await refreshFromWorldBank())
       } catch (e) {
         return send(res, 502, { error: 'refresh_failed', detail: String(e.message ?? e).slice(0, 400) })
+      }
+    }
+
+    if (pathname === '/api/settings' && method === 'PUT') {
+      const body = await readBody(req, MAX_SETTINGS_BYTES)
+      return send(res, 200, await saveSettings(body))
+    }
+
+    if (pathname === '/api/settings/reset' && method === 'POST') return send(res, 200, resetSettings())
+
+    if (pathname === '/api/countries' && method === 'PUT') {
+      const body = await readBody(req, 200_000)
+      try {
+        return send(res, 200, saveCountryEdits(body.edits, { perCountry: body.perCountry, seed: body.seed }))
+      } catch (e) {
+        return send(res, 400, { error: String(e.message ?? 'invalid_edits') })
       }
     }
 

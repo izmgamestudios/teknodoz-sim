@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../auth'
 import type { PageId } from '../config'
 import { EXAMPLES, type Example } from '../examples'
+import { useSiteSettings } from '../siteSettings'
 import { useI18n } from '../i18n'
 import { countryName, useCountryPool } from '../personas'
 import { useSelection } from '../selection'
@@ -27,6 +28,7 @@ function Shot({ name, alt }: { name: string; alt: string }) {
 
 export default function Guide({ go }: { go: (p: PageId) => void }) {
   const { t, lang } = useI18n()
+  const { settings } = useSiteSettings()
   const { admin } = useAuth()
   const { data: pool } = useCountryPool()
   const selection = useSelection()
@@ -86,7 +88,7 @@ export default function Guide({ go }: { go: (p: PageId) => void }) {
         <h2 className="text-xl font-bold">{t.guide.examplesTitle}</h2>
         <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">{t.guide.examplesIntro}</p>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
-          {EXAMPLES.map((ex) => {
+          {EXAMPLES.filter((ex) => !settings.seed.hiddenExamples.includes(ex.id)).map((ex) => {
             const text = t.guide.ex[ex.id]
             return (
               <article key={ex.id} className={card}>

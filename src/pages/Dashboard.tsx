@@ -4,7 +4,8 @@ import { useAuth } from '../auth'
 import type { PageId } from '../config'
 import { LANGS, useI18n } from '../i18n'
 import { usePersonas } from '../personas'
-import { KINDS, TASKS } from '../tasks'
+import { useCatalog } from '../catalog'
+import { KINDS } from '../tasks'
 
 const card = 'rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900'
 const LEVEL_AT = [0, 5, 20]
@@ -21,6 +22,7 @@ function Stat({ label, value, hint }: { label: string; value: string; hint?: str
 
 export default function Dashboard({ go }: { go: (p: PageId) => void }) {
   const { t } = useI18n()
+  const { tasks: TASKS } = useCatalog()
   const { admin, loading } = useAuth()
   const personas = usePersonas()
   const [runs, setRuns] = useState<RunSummary[] | null>(null)
