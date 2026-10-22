@@ -147,6 +147,31 @@ export function questionsFor(taskId) {
   return loadQuestionnaires()[taskId]?.questions ?? null
 }
 
+let i18nCache = { key: '', value: {} }
+function loadQuestionI18n() {
+  const file = join(ROOT, 'shared', 'questionnaires.i18n.json')
+  const key = existsSync(file) ? String(statSync(file).mtimeMs) : ''
+  if (i18nCache.key !== key) {
+    let value = {}
+    try {
+      value = JSON.parse(readFileSync(file, 'utf8'))
+    } catch {
+      /* optional file */
+    }
+    i18nCache = { key, value }
+  }
+  return i18nCache.value
+}
+
+/** Display-only translation of question prompts and option labels (keyed by the English text); falls back to English. */
+export function localizeQuestions(questions, lang) {
+  const all = loadQuestionI18n()
+  const map = Object.hasOwn(all, lang) ? all[lang] : null
+  if (!map || !questions) return questions
+  const tr = (text) => (Object.hasOwn(map, text) ? map[text] : text)
+  return questions.map((q) => ({ ...q, prompt: tr(q.prompt), ...(q.options ? { options: q.options.map((o) => ({ ...o, label: tr(o.label) })) } : {}) }))
+}
+
 export function questionnaireMeta(taskId) {
   if (STUDY_ID_RE.test(taskId)) {
     const st = getStudy(taskId)

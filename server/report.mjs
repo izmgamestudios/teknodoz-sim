@@ -3,7 +3,7 @@ import { join } from 'node:path'
 import { loadCountryPool } from './countries.mjs'
 import { loadDict } from './i18n.mjs'
 import { loadCustomPersonas } from './custompersonas.mjs'
-import { loadRunData, questionnaireMeta, questionsFor } from './results.mjs'
+import { loadRunData, localizeQuestions, questionnaireMeta, questionsFor } from './results.mjs'
 import { ROOT } from './paths.mjs'
 
 const round = (n, d = 2) => (n === null || n === undefined ? null : Math.round(n * 10 ** d) / 10 ** d)
@@ -230,7 +230,7 @@ export async function buildReport(run, { lang = 'en', title } = {}) {
   const meta = questionnaireMeta(params.taskId)
   const info = personaInfo(params.pool === 'country' || params.pool === 'custom' ? params.pool : 'dev')
 
-  let questions = questionsFor(params.taskId)
+  let questions = localizeQuestions(questionsFor(params.taskId), lang)
   if (!questions) {
     const seen = new Map()
     for (const s of data.sets) for (const a of s.payload.answers) if (!seen.has(a.questionId)) seen.set(a.questionId, Array.isArray(a.value) ? 'multi_choice' : typeof a.value === 'number' ? 'likert' : 'single_choice')

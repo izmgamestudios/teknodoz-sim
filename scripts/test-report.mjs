@@ -75,7 +75,7 @@ try {
   assert.ok(fun.questions.find((q) => q.id === 'q0').mean === 3)
   assert.ok(fun.findings.some((f) => f.startsWith('„')), 'German quotation marks')
   assert.ok(fun.sections.questions === 'Ergebnisse je Frage')
-  assert.equal(fun.respondents[0].labels.q3, 'Save and resume later')
+  assert.equal(fun.respondents[0].labels.q3, 'Speichern und später fortsetzen') // display translation of the option label
 
   // empty run
   const empty = await buildReport({ id: 'aaaaaaaa-0000-4000-8000-0000000000ff', kind: 'simulation', params: { mode: 'auto', taskId: 'x', jobName: 'teknodoz-none-n1' } }, { lang: 'es' })
