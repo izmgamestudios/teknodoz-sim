@@ -147,3 +147,6 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+# MatrAIx vendor checkout (96MB) — see scripts/setup-matraix.sh
+vendor/
