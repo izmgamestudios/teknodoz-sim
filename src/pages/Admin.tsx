@@ -316,6 +316,11 @@ const TABS: ('system' | 'validate' | SettingsTab)[] = ['system', 'brand', 'menus
 function Tabs() {
   const { t } = useI18n()
   const [tab, setTab] = useState<'system' | 'validate' | SettingsTab>('system')
+  const [lastSettingsTab, setLast] = useState<SettingsTab | null>(null)
+  const choose = (id: 'system' | 'validate' | SettingsTab) => {
+    setTab(id)
+    if (id !== 'system' && id !== 'validate') setLast(id)
+  }
   return (
     <div>
       <div role="tablist" className="mb-6 flex flex-wrap gap-1 border-b border-slate-200 dark:border-slate-800">
@@ -325,14 +330,21 @@ function Tabs() {
             type="button"
             role="tab"
             aria-selected={tab === id}
-            onClick={() => setTab(id)}
+            onClick={() => choose(id)}
             className={`-mb-px border-b-2 px-3 py-2 text-sm ${tab === id ? 'border-brand font-medium text-brand' : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-white'}`}
           >
             {t.admin.set.tabs[id]}
           </button>
         ))}
       </div>
-      {tab === 'system' ? <Panel /> : tab === 'validate' ? <AdminValidation /> : <AdminSettings tab={tab} />}
+      {tab === 'system' && <Panel />}
+      {tab === 'validate' && <AdminValidation />}
+      {/* Stays mounted once opened so unsaved edits survive switching to System or Validation. */}
+      {lastSettingsTab && (
+        <div hidden={tab === 'system' || tab === 'validate'}>
+          <AdminSettings tab={lastSettingsTab} />
+        </div>
+      )}
     </div>
   )
 }
